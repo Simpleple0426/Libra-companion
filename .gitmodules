@@ -1,3 +1,9 @@
 [submodule "backend/vendor/co-reading-kit"]
 	path = backend/vendor/co-reading-kit
 	url = https://github.com/Youxuuuuu/co-reading-kit.git
+[submodule "third_party/Music-Mcp-Netease"]
+	path = third_party/Music-Mcp-Netease
+	url = https://github.com/Anko3o/Music-Mcp-Netease.git
+[submodule "third_party/netease-music-mcp"]
+	path = third_party/netease-music-mcp
+	url = https://github.com/Cheiineeey/netease-music-mcp.git
