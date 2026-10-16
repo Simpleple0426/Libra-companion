@@ -1,0 +1,48 @@
+{
+  "schema": "local_life_initial_decisions_v1",
+  "status": "enabled_after_verified_preflight",
+  "confirmed_at": "2026-09-24",
+  "initial_location": {
+    "id": "home.f1.living",
+    "name": "客厅",
+    "scope": "first_initialization_only",
+    "restart_policy": "restore_saved_location_activity_and_progress"
+  },
+  "initial_activity": null,
+  "initial_needs": {
+    "hunger": 5,
+    "thirst": 5,
+    "sleepiness": 5,
+    "comfort": 5,
+    "health": 5,
+    "joyfulness": 5,
+    "cleanliness": 5,
+    "safety": 5,
+    "spiritual satisfaction": 5,
+    "social connectivity": 5
+  },
+  "time_change": {
+    "passive_rates": "disabled",
+    "event_updates": "settled_actual_results_only",
+    "sleep_elapsed": "record_duration_without_numeric_recovery_rate"
+  },
+  "offline_policy": "exclude_gap_no_needs_no_activity_no_memory",
+  "special_sleep_policy": "unconfigured_outside_confirmed_wake_anchors",
+  "timezone": "Asia/Shanghai",
+  "exclusions": [
+    "legacy_schedule",
+    "legacy_life_generation",
+    "pizza_restaurant_plan",
+    "test_experiences",
+    "invented_prior_experiences",
+    "invented_user_actions_or_dialogue"
+  ],
+  "activation": {
+    "run_id": "local-life-v1",
+    "data_class": "local_single_user",
+    "backup_id": "pre-life-enable-confirmed-v1-final-20260924",
+    "enabled_at": "2026-09-24",
+    "proactive_messages": false,
+    "initial_history_rows": 0
+  }
+}

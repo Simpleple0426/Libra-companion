@@ -1,0 +1,12 @@
+{
+  "purpose": "知识卡书目与概述的核对线索；不作为逐字引文来源。",
+  "sources": [
+    {"book_id":"fan_xing","url":"https://zh.wikipedia.org/wiki/%E7%B9%81%E6%98%9F","supports":"作者、体裁、主题概览"},
+    {"book_id":"under_the_cherry_trees","url":"https://zh.wikipedia.org/wiki/%E6%A2%B6%E4%BA%95%E5%9F%BA%E6%AC%A1%E9%83%8E","supports":"作者与作品名消歧"},
+    {"book_id":"the_still_water_pond","url":"https://m.bookschina.com/5368773.htm","supports":"作者、短篇集与篇目性质"},
+    {"book_id":"night_flight","url":"https://wyb.chinawriter.com.cn/Pad/content/201801/19/content2428.html","supports":"作者、创作背景与故事概览"},
+    {"book_id":"sand_and_foam","url":"https://books.google.com/books/about/%E6%B2%99%E4%B8%8E%E6%B2%AB.html?id=2xdSzwEACAAJ","supports":"作者、体裁与结构"},
+    {"book_id":"the_burning_court","url":"https://www.simonandschuster.com/books/The-Burning-Court/John-Dickson-Carr/American-Mystery-Classics/9781613166987","supports":"作者和作品书目"},
+    {"book_id":"galactic_empire","url":"https://www.penguinrandomhouse.com/series/GE3/galactic-empire/","supports":"银河帝国三部曲范围与分册概览"}
+  ]
+}

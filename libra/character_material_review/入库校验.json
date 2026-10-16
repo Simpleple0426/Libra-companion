@@ -1,0 +1,89 @@
+{
+  "records": 81,
+  "excerpts": 81,
+  "embeddings": {
+    "embedded": 81,
+    "enabled": true,
+    "total": 81
+  },
+  "recall": {
+    "一次失误否定自己的能力": [
+      {
+        "id": "ZR-02-02",
+        "source_stage": "告白前",
+        "subject": "user_related"
+      },
+      {
+        "id": "ZR-24-05",
+        "source_stage": "结婚后",
+        "subject": "user_related"
+      },
+      {
+        "id": "ZR-05-03",
+        "source_stage": "同居后",
+        "subject": "zuoran_self"
+      }
+    ],
+    "遇到麻烦委屈想让你来接我": [
+      {
+        "id": "ZR-08-04",
+        "source_stage": "同居后",
+        "subject": "user_related"
+      },
+      {
+        "id": "ZR-26-02",
+        "source_stage": "结婚后",
+        "subject": "user_related"
+      },
+      {
+        "id": "ZR-24-02",
+        "source_stage": "结婚后",
+        "subject": "user_related"
+      }
+    ],
+    "独处学习整理方向": [
+      {
+        "id": "ZR-16-04",
+        "source_stage": "同居后",
+        "subject": "zuoran_self"
+      },
+      {
+        "id": "ZR-20-03",
+        "source_stage": "同居后",
+        "subject": "zuoran_self"
+      },
+      {
+        "id": "ZR-14-03",
+        "source_stage": "同居后",
+        "subject": "zuoran_self"
+      }
+    ],
+    "想安静陪在你身边": [
+      {
+        "id": "ZR-24-02",
+        "source_stage": "结婚后",
+        "subject": "user_related"
+      },
+      {
+        "id": "ZR-15-03",
+        "source_stage": "同居后",
+        "subject": "user_related"
+      },
+      {
+        "id": "ZR-12-04",
+        "source_stage": "同居后",
+        "subject": "user_related"
+      }
+    ]
+  },
+  "table_counts": {
+    "character_corpus_v2": 81,
+    "character_corpus_v2_fts": 81,
+    "character_corpus_v2_embeddings": 81
+  },
+  "shared_history_unchanged": true,
+  "reviewed_data_matches_database": true,
+  "removed_ids_absent": true,
+  "relevant_tests_passed": 15,
+  "legacy_tests_missing_deleted_fixtures": 4
+}

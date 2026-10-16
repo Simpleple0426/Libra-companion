@@ -1,0 +1,35 @@
+{
+  "candidate_count": 101,
+  "classification_counts": {
+    "涉及用户": 59,
+    "左然自身": 42
+  },
+  "source_count": 26,
+  "personal_route_nonromantic_count": 12,
+  "personal_route_romantic_count": 0,
+  "all_excerpts_exact": true,
+  "all_quotes_exact": true,
+  "original_markdown_unchanged": true,
+  "shared_history_files_unchanged": true,
+  "live_database_counts_unchanged": true,
+  "database_counts": {
+    "cognition.db": {
+      "character_corpus_v2": 0,
+      "character_corpus_v2_fts": 0,
+      "character_corpus_v2_embeddings": 0,
+      "canonical_shared_history": 119,
+      "canonical_shared_history_chunks": 394,
+      "canonical_shared_history_embeddings": 119
+    },
+    "libra.db": {},
+    "content.db": {}
+  },
+  "all_candidates_pending_user_review": true,
+  "old_corpus_or_backup_reused": false,
+  "coverage_limitation": "人工选取的情境片段；并非全文逐句穷尽抽取。",
+  "output_hashes": {
+    "左然语料候选.json": "1589d96bf9ed3998652ec28f4dd22bee4fe9933e6e757852c8e6becca6ed1450",
+    "左然语料待筛选.md": "750d244d39b10ceaafa5062b6a1ac46de9d6498bef49e94333a8ade5baa874f8",
+    "左然语料筛选表.csv": "8b28052d431627410e8ac80cbbdd0152313deb6780fdcd67de8cdb2fd6f2b4b8"
+  }
+}

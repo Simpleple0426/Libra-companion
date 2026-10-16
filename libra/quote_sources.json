@@ -1,0 +1,12 @@
+{
+  "books": [
+    {
+      "title": "无人生还",
+      "author_match": "阿加莎克里斯蒂",
+      "original_title": "And Then There Were None",
+      "douban_book_id": "30466192",
+      "source_url": "https://book.douban.com/subject/30466192/",
+      "note": "已核对书名、作者和夏阳译者。摘录来自2019年新星出版社版本；本地未提供ISBN，不能认定同一版次。"
+    }
+  ]
+}

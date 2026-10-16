@@ -1,0 +1,54 @@
+{
+  "retained_count": 81,
+  "removed_count": 20,
+  "removed_ids": [
+    "ZR-01-03",
+    "ZR-03-03",
+    "ZR-05-01",
+    "ZR-05-04",
+    "ZR-07-01",
+    "ZR-07-03",
+    "ZR-10-03",
+    "ZR-11-03",
+    "ZR-12-01",
+    "ZR-12-02",
+    "ZR-13-01",
+    "ZR-13-03",
+    "ZR-14-02",
+    "ZR-15-04",
+    "ZR-17-01",
+    "ZR-18-02",
+    "ZR-19-03",
+    "ZR-20-01",
+    "ZR-22-05",
+    "ZR-23-03"
+  ],
+  "classification_counts": {
+    "涉及用户": 46,
+    "左然自身": 35
+  },
+  "stage_counts": {
+    "告白前": 10,
+    "同居后": 55,
+    "结婚后": 16
+  },
+  "all_excerpts_exact": true,
+  "all_direct_quotes_exact": true,
+  "user_event_blocks_preserved": true,
+  "review_complete": true,
+  "database_imported": false,
+  "live_database_counts_unchanged": true,
+  "database_counts": {
+    "cognition.db": {
+      "character_corpus_v2": 0,
+      "character_corpus_v2_fts": 0,
+      "character_corpus_v2_embeddings": 0,
+      "canonical_shared_history": 119,
+      "canonical_shared_history_chunks": 394,
+      "canonical_shared_history_embeddings": 119
+    },
+    "libra.db": {},
+    "content.db": {}
+  },
+  "archive": "libra\\character_material_review\\用户复核存档\\20260914_181016_877635"
+}

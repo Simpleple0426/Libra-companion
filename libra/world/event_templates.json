@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "description": "用户世界设定派生的受控事件模板；这里只列出允许被生活模拟器实例化的小事。",
+  "daily_event_limit": 0,
+  "minimum_state_age_minutes": 25,
+  "detail_expansions": {},
+  "templates": {}
+}

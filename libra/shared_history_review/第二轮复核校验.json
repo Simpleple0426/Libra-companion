@@ -1,0 +1,29 @@
+{
+  "event_count": 119,
+  "removed_event_count": 47,
+  "modified_event_ids": [
+    "SH-02-05-02",
+    "SH-04-07-02",
+    "SH-08-02",
+    "SH-22-07"
+  ],
+  "relationship_stage_counts": {
+    "告白前": 23,
+    "同居后": 74,
+    "结婚后": 22
+  },
+  "source_markdown_unchanged": true,
+  "all_excerpts_exact": true,
+  "edited_excerpt_event": "SH-04-07-02",
+  "edited_excerpt_ranges": [
+    [
+      940,
+      975
+    ],
+    [
+      1035,
+      1064
+    ]
+  ],
+  "database_imported": false
+}

@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const {PlaybackClock,parsePosition,formatPosition,windowCues}=require('./timeline.js');
+let now=0;const clock=new PlaybackClock(()=>now);
+clock.set(90);clock.play();now=10000;assert.equal(clock.position(),100);
+clock.pause();now=20000;assert.equal(clock.position(),100);
+clock.set(30,2);clock.play();now=25000;assert.equal(clock.position(),40);
+assert.equal(parsePosition('01:02:03'),3723);assert.equal(parsePosition('12:30'),750);
+assert.throws(()=>parsePosition('1:70'));assert.throws(()=>clock.set(NaN));
+assert.equal(formatPosition(3723),'01:02:03');
+const cues=[{start:1,end:3,text:'past'},{start:4,end:7,text:'active'},{start:8,end:10,text:'future'}];
+assert.deepEqual(windowCues(cues,5),[cues[0]]);
+assert.deepEqual(windowCues(cues,10,3),cues.slice(1));
+assert.deepEqual(windowCues(cues,700),[]);
+assert.deepEqual(windowCues(cues,2),[]);
+console.log('Timeline clock, pause, speed, seek and spoiler-boundary assertions passed');

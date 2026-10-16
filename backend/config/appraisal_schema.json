@@ -1,0 +1,148 @@
+{
+  "type": "object",
+  "required": [
+    "event_id",
+    "goal_appraisals",
+    "standard_appraisals"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "goal_appraisals": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "target",
+          "goal_id",
+          "goal_description",
+          "parent_core_goal_id",
+          "impact",
+          "impact_strength",
+          "context_adjustment",
+          "prospect_status",
+          "prospect"
+        ],
+        "properties": {
+          "target": {
+            "type": "string",
+            "enum": [
+              "user",
+              "libra",
+              "relationship",
+              "other"
+            ]
+          },
+          "goal_id": {
+            "type": "string"
+          },
+          "goal_description": {
+            "type": "string"
+          },
+          "parent_core_goal_id": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "string",
+            "enum": [
+              "promote",
+              "hinder",
+              "neutral"
+            ]
+          },
+          "impact_strength": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "context_adjustment": {
+            "type": "number",
+            "minimum": -0.15,
+            "maximum": 0.15
+          },
+          "prospect_status": {
+            "type": "string",
+            "enum": [
+              "none",
+              "anticipated"
+            ]
+          },
+          "prospect": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "expected_outcome",
+                  "outcome_type",
+                  "valid_until"
+                ],
+                "properties": {
+                  "expected_outcome": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "outcome_type": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_]*$"
+                  },
+                  "valid_until": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "standard_appraisals": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "actor",
+          "standard_id",
+          "evaluation",
+          "evaluation_strength"
+        ],
+        "properties": {
+          "actor": {
+            "type": "string",
+            "enum": [
+              "user",
+              "libra",
+              "other"
+            ]
+          },
+          "standard_id": {
+            "type": "string"
+          },
+          "evaluation": {
+            "type": "string",
+            "enum": [
+              "praiseworthy",
+              "blameworthy",
+              "neutral"
+            ]
+          },
+          "evaluation_strength": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

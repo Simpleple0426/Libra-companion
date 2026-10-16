@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+astral==3.2
+python-multipart
+firebase-admin
+numpy
+fastembed==0.8.0
+librosa
+python-dotenv
+Pillow
+beautifulsoup4==4.13.5
+tzdata; sys_platform == "win32"

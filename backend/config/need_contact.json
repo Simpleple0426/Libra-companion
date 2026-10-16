@@ -1,0 +1,9 @@
+{
+  "thresholds": {
+    "connection": 0.60,
+    "closeness": 0.50,
+    "reassurance": 0.10,
+    "care": 0.55,
+    "expression": 0.35
+  }
+}

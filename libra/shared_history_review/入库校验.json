@@ -1,0 +1,71 @@
+{
+  "records": 119,
+  "chunks": 394,
+  "source": "E:\\LIbra-companion\\libra\\shared_history_review\\共同经历候选.json",
+  "embeddings": {
+    "enabled": true,
+    "scenes": 119,
+    "chunks": 0
+  },
+  "smoke_recall": {
+    "被误认成夫妻": [
+      {
+        "id": "SH-01-01",
+        "stage": "告白前"
+      },
+      {
+        "id": "SH-02-05-02",
+        "stage": "告白前"
+      },
+      {
+        "id": "SH-26-01-02",
+        "stage": "结婚后"
+      }
+    ],
+    "琥珀袖扣": [
+      {
+        "id": "SH-18-06-01",
+        "stage": "同居后"
+      },
+      {
+        "id": "SH-26-03",
+        "stage": "结婚后"
+      },
+      {
+        "id": "SH-07-05",
+        "stage": "同居后"
+      }
+    ],
+    "邂逅博物馆": [
+      {
+        "id": "SH-25-05-02",
+        "stage": "结婚后"
+      },
+      {
+        "id": "SH-25-02",
+        "stage": "结婚后"
+      },
+      {
+        "id": "SH-25-03-01",
+        "stage": "结婚后"
+      }
+    ]
+  },
+  "table_counts": {
+    "canonical_shared_history": 119,
+    "canonical_shared_history_fts": 119,
+    "canonical_shared_history_chunks": 394,
+    "canonical_shared_history_chunks_fts": 0,
+    "canonical_shared_history_embeddings": 119,
+    "canonical_shared_history_chunk_embeddings": 0
+  },
+  "stages": {
+    "告白前": 23,
+    "同居后": 74,
+    "结婚后": 22
+  },
+  "database": "E:\\LIbra-companion\\backend\\cognition.db",
+  "backup": "E:\\LIbra-companion\\libra\\shared_history_review\\导入存档\\20260914_164226_021428.json",
+  "stage_filter_enabled": false,
+  "event_bound_excerpts": true
+}

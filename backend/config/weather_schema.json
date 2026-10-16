@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "city",
+    "district",
+    "temperature",
+    "current_weather",
+    "tomorrow_weather",
+    "tomorrow_min",
+    "tomorrow_max",
+    "reminder"
+  ],
+  "properties": {
+    "city": {"type": "string"},
+    "district": {"type": "string"},
+    "temperature": {"type": "integer"},
+    "current_weather": {"type": "string"},
+    "tomorrow_weather": {"type": "string"},
+    "tomorrow_min": {"type": "integer"},
+    "tomorrow_max": {"type": "integer"},
+    "reminder": {"type": "string"}
+  }
+}

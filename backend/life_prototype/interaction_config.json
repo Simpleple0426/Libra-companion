@@ -1,0 +1,19 @@
+{
+  "version": "p3-isolated-v1",
+  "source": "test_fixture",
+  "timezone": "Asia/Shanghai",
+  "wake_minutes": {
+    "workday": 420,
+    "swimming": 390,
+    "weekend": 450
+  },
+  "wake_source": "docs/左然生活启动设定.md 睡眠时间依据与续睡确认；仅引用起床时间，不调用旧模板",
+  "wake_jitter_minutes": 0,
+  "wake_jitter_source": "test_fixture: fixed zero inside confirmed +/-5 minutes",
+  "normal_sleep_windows": [],
+  "calendar": {},
+  "special_schedule_policy": null,
+  "late_sleep_policy": null,
+  "offline_sleep_policy": null,
+  "goodnight_recognition": "explicit_test_envelope_not_production_classifier"
+}

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "owner": "libra",
+  "fact_source": "user_confirmed",
+  "books": [
+    {"book_id":"the_end_of_eternity","title":"永恒的终结","author":"艾萨克·阿西莫夫","work_type":"novel","reading_status":"read"},
+    {"book_id":"to_kill_a_mockingbird","title":"杀死一只知更鸟","author":"哈珀·李","work_type":"novel","reading_status":"read"},
+    {"book_id":"fan_xing","title":"繁星","author":"冰心","work_type":"poetry","reading_status":"read"},
+    {"book_id":"othello","title":"奥赛罗","author":"威廉·莎士比亚","work_type":"play","reading_status":"read"},
+    {"book_id":"lolita","title":"洛丽塔","author":"弗拉基米尔·纳博科夫","work_type":"novel","reading_status":"read"},
+    {"book_id":"under_the_cherry_trees","title":"樱花树下","alternate_titles":["樱花树下有尸体"],"author":"梶井基次郎","work_type":"short_story","reading_status":"read"},
+    {"book_id":"sand_and_foam","title":"沙与沫","author":"纪伯伦","work_type":"prose_poetry","reading_status":"read"},
+    {"book_id":"the_still_water_pond","title":"孤独的池塘","author":"弗朗索瓦丝·萨冈","work_type":"short_story_collection","reading_status":"read"},
+    {"book_id":"galactic_empire","title":"银河帝国","author":"艾萨克·阿西莫夫","work_type":"series","reading_status":"read","scope_note":"用户未指定具体卷次，按系列层面记录，不声称读过某一确定版本的全部卷册。"},
+    {"book_id":"night_flight","title":"夜航","author":"安托万·德·圣埃克苏佩里","work_type":"novella","reading_status":"read"},
+    {"book_id":"the_burning_court","title":"燃烧的法庭","author":"约翰·迪克森·卡尔","work_type":"mystery_novel","reading_status":"read"}
+  ],
+  "excluded": [
+    {"title":"穹空","reason":"user_removed"},
+    {"title":"闻香识女人","reason":"film"},
+    {"title":"十二怒汉","reason":"film"},
+    {"title":"情书","reason":"film"},
+    {"title":"本杰明·巴顿奇事","reason":"film_in_user_list"},
+    {"title":"低俗小说","reason":"film"},
+    {"title":"爱在三部曲","reason":"film_series"}
+  ]
+}

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Libra Agent Trace</title>
+  <style>
+    :root{color-scheme:dark;--bg:#090d18;--panel:#111827;--panel2:#172033;--line:#273249;--text:#e8edf7;--muted:#8c99ae;--cyan:#5eead4;--blue:#60a5fa;--green:#4ade80;--amber:#fbbf24;--red:#fb7185}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% 0,#152442 0,transparent 34%),var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    button,select{font:inherit}.shell{display:grid;grid-template-columns:330px minmax(0,1fr);height:100vh}.sidebar{border-right:1px solid var(--line);background:#0b1120e8;display:flex;flex-direction:column;min-width:0}.brand{padding:22px 20px 16px;border-bottom:1px solid var(--line)}.brand h1{font-size:18px;margin:0}.brand p{color:var(--muted);margin:4px 0 0;font-size:12px}.filters{display:flex;gap:8px;padding:12px}.filters select,.filters button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 9px}.filters select{flex:1}.filters button{cursor:pointer}.turns{overflow:auto;padding:0 10px 18px}.turn{width:100%;text-align:left;background:transparent;color:inherit;border:1px solid transparent;border-radius:10px;padding:11px;margin:3px 0;cursor:pointer}.turn:hover{background:var(--panel)}.turn.active{background:var(--panel2);border-color:#3b82f666}.turn-top{display:flex;justify-content:space-between;gap:8px}.turn-id{font-family:ui-monospace,monospace;font-size:12px;overflow:hidden;text-overflow:ellipsis}.turn-time,.subtle{font-size:11px;color:var(--muted)}.badges{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}.badge{border:1px solid var(--line);border-radius:999px;padding:1px 7px;font-size:10px;color:var(--muted)}.badge.ok{color:var(--green);border-color:#22c55e55}.badge.warn{color:var(--amber);border-color:#f59e0b55}.badge.fail{color:var(--red);border-color:#fb718555}.main{overflow:auto;padding:24px 28px 50px}.empty{height:70vh;display:grid;place-items:center;color:var(--muted)}.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}.topbar h2{margin:0;font-size:22px;font-family:ui-monospace,monospace}.topbar p{margin:4px 0;color:var(--muted)}.privacy{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;white-space:nowrap}.privacy input{accent-color:var(--blue)}.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}.metric,.card{background:linear-gradient(145deg,#121b2c,#0f1726);border:1px solid var(--line);border-radius:12px}.metric{padding:13px}.metric b{display:block;font-size:17px;margin-top:3px}.metric span{color:var(--muted);font-size:11px}.pipeline{display:flex;align-items:center;overflow:auto;padding:16px;margin-bottom:18px}.stage{min-width:95px;text-align:center}.dot{width:11px;height:11px;border-radius:50%;background:var(--blue);box-shadow:0 0 12px #60a5fa88;margin:0 auto 6px}.stage.off .dot{background:#475569;box-shadow:none}.stage.error .dot{background:var(--red)}.stage-name{font-size:11px;color:var(--muted)}.arrow{height:1px;background:var(--line);min-width:24px;flex:1}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{padding:16px;min-width:0}.card.wide{grid-column:1/-1}.card h3{font-size:13px;margin:0 0 12px;color:#cbd5e1}.kv{display:grid;grid-template-columns:125px 1fr;gap:7px 12px}.key{color:var(--muted)}.value{overflow-wrap:anywhere}.memory{padding:9px 0;border-top:1px solid var(--line)}.memory:first-of-type{border-top:0}.memory-id{font:11px ui-monospace,monospace;color:var(--cyan)}pre{white-space:pre-wrap;word-break:break-word;margin:0;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;color:#cbd5e1;max-height:460px;overflow:auto}.sensitive{filter:blur(5px);user-select:none}.sensitive.reveal{filter:none;user-select:text}.errorbox{color:var(--red);padding:20px}.mobile-note{display:none}
+    .memory.used{border-left:3px solid var(--green);padding-left:10px}.memory.candidate{border-left:3px solid #475569;padding-left:10px}.decision{padding:13px;border-radius:9px;margin-bottom:12px;border:1px solid}.decision.sent{color:var(--green);background:#052e1a66;border-color:#22c55e55}.decision.silent{color:var(--blue);background:#0c294866;border-color:#60a5fa55}.decision.blocked{color:var(--amber);background:#3a290866;border-color:#f59e0b55}.decision.rejected{color:var(--red);background:#3b101966;border-color:#fb718555}.versions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.message{padding:10px;border:1px solid var(--line);border-radius:8px;margin-top:7px;background:#0b1220}details summary{cursor:pointer;color:#cbd5e1}
+    @media(max-width:850px){.shell{grid-template-columns:1fr}.sidebar{height:38vh;border-right:0;border-bottom:1px solid var(--line)}.main{height:62vh;padding:16px}.summary{grid-template-columns:repeat(2,1fr)}.grid,.versions{grid-template-columns:1fr}.mobile-note{display:block}.topbar{display:block}.privacy{margin-top:8px}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><h1>Libra Agent Trace</h1><p>持久化认知回合 · 本地诊断控制台</p></div>
+    <div class="filters"><select id="status"><option value="">全部状态</option><option>committed</option><option>planned</option><option>failed_context</option><option>failed_generation</option><option>failed_validation</option></select><button id="refresh">刷新</button></div>
+    <div id="turns" class="turns"></div>
+  </aside>
+  <main id="main" class="main"><div class="empty">从左侧选择一个认知回合</div></main>
+</div>
+<script>
+const $=s=>document.querySelector(s), esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let selected=null, reveal=false;
+const json=v=>esc(JSON.stringify(v??{},null,2));
+const badge=(value)=>{const v=String(value??'unknown'), c=/fail|error|rejected/.test(v)?'fail':/unavailable|not_requested|duplicate|running/.test(v)?'warn':/committed|available|completed|accepted/.test(v)?'ok':'warn';return `<span class="badge ${c}">${esc(v)}</span>`};
+function date(v){if(!v)return '—';const d=new Date(v);return isNaN(d)?v:d.toLocaleString()}
+async function loadTurns(){
+  $('#turns').innerHTML='<div class="empty">加载中…</div>';
+  const status=$('#status').value, url='/cognition/turns?limit=100'+(status?'&status='+encodeURIComponent(status):'');
+  try{const data=await fetch(url).then(r=>{if(!r.ok)throw Error(r.status);return r.json()});renderTurns(data.turns||[])}catch(e){$('#turns').innerHTML=`<div class="errorbox">无法加载：${esc(e.message)}</div>`}
+}
+function renderTurns(turns){
+  if(!turns.length){$('#turns').innerHTML='<div class="empty">暂无回合</div>';return}
+  $('#turns').innerHTML=turns.map(t=>`<button class="turn ${t.turn_id===selected?'active':''}" data-id="${esc(t.turn_id)}"><div class="turn-top"><span class="turn-id">${esc(t.turn_id)}</span><span class="turn-time">${esc(date(t.created_at))}</span></div><div class="badges">${badge(t.status)}${badge(t.source)}${t.has_actions?'<span class="badge ok">tool</span>':''}</div></button>`).join('');
+  document.querySelectorAll('.turn').forEach(el=>el.onclick=()=>loadDetail(el.dataset.id));
+}
+const field=(k,v)=>`<div class="key">${esc(k)}</div><div class="value">${typeof v==='object'?`<pre>${json(v)}</pre>`:esc(v)}</div>`;
+const observedValue=v=>v&&typeof v==='object'?v.value:v;
+const contextLabel=v=>({unknown:'未知',asleep:'睡眠（不回复）',sleeping:'睡眠',working:'工作',free:'空闲',leisure:'休闲',resting:'休息',commuting:'通勤',exercising:'运动',eating:'用餐',active:'活跃',paused:'暂停',morning:'早晨',afternoon:'下午',evening:'傍晚',night:'夜间'}[v]??(v==null||v===''?'未知':v));
+function currentContext(snapshot,sensitiveClass){
+ const s=snapshot||{}, t=s.temporal||{}, l=s.libra||{}, u=s.user||{}, i=s.interaction||{};
+ const status=u.status||{}, end=status.valid_until, at=s.generated_at;
+ const expired=end&&at&&Number.isFinite(Date.parse(end))&&Date.parse(end)<=Date.parse(at);
+ const value=v=>contextLabel(observedValue(v));
+ const time=v=>v||'未知';
+ const fatigue=observedValue(l.fatigue), hasFatigue=typeof fatigue==='number'&&Number.isFinite(fatigue)&&fatigue>=0&&fatigue<=1;
+ return `<section class="card wide"><h3>[2] Current Context · 回合发生时的快照</h3>
+ <p class="subtle">以下是这一轮保存的完整情境，不是此刻实时状态，也不表示全部字段都传给 Response。用户状态是否过期按快照时间判断。</p>
+ ${!s.context_id&&!s.generated_at?'<p class="subtle">此回合没有完整情境快照，缺失字段显示未知。</p>':''}
+ <div class="grid">
+ <div class="card"><h3>时间</h3><div class="kv">${field('当地时间',time(t.local_time||s.generated_at))}${field('时区',s.timezone||'未知')}${field('时段',contextLabel(t.day_phase))}${field('是否工作日',t.is_workday===true?'是':t.is_workday===false?'否':'未知')}</div></div>
+ <div class="card"><h3>左然状态</h3><div class="kv">${field('活动',value(l.activity))}${field('互动状态',value(l.availability))}${field('位置',value(l.location_name))}${field('疲劳',hasFatigue?Math.round(fatigue*100)+' / 100':'未知')}</div>${hasFatigue?`<progress style="width:100%;accent-color:var(--cyan)" max="100" value="${Math.round(fatigue*100)}" aria-label="疲劳程度"></progress>`:''}</div>
+ <div class="card"><h3>用户状态</h3><div class="kv">${field('首页状态',expired?'未知（当时已过期）':value(u.status))}${field('状态更新时间',time(status.observed_at))}${field('状态有效至',time(end))}</div></div>
+ <div class="card"><h3>互动情况</h3><div class="kv">${field('对话状态',contextLabel(i.conversation_status))}${field('距有效互动',i.minutes_since_last_interaction==null?'未知':i.minutes_since_last_interaction+' 分钟')}${field('最近一小时消息',i.messages_last_60m??'未知')}${field('今天消息',i.messages_today??'未知')}${field('上次有效互动',time(i.last_effective_interaction_at))}${field('用户最近发言',time(i.last_user_message_at))}${field('左然最近发言',time(i.last_libra_message_at))}</div></div>
+ </div><details style="margin-top:12px"><summary>核对完整 Current Context JSON</summary><pre class="${sensitiveClass}">${json(s)}</pre></details></section>`;
+}
+function affectView(c,plan){
+ const saved=c.affect_snapshot, state=saved||c.cognitive_state||{}, guide=plan.expression_guidance||{};
+ const labels={joy:'开心',distress:'难受',happy_for:'替你高兴',sorry_for:'为你挂心',hope:'期待',fear:'担忧',satisfaction:'满足',disappointment:'失望',relief:'安心',fears_confirmed:'担忧成真',pride:'自豪',shame:'惭愧',admiration:'欣赏',reproach:'不认同',gratification:'欣慰',gratitude:'感激',remorse:'后悔',anger:'生气',pleasure:'愉悦度',arousal:'唤醒度',dominance:'掌控感',connection:'联系',closeness:'亲近',reassurance:'安心确认',care:'关心',expression:'表达分享'};
+ const number=v=>typeof v==='number'&&Number.isFinite(v);
+ const fmt=v=>number(v)?v.toFixed(3):'未记录';
+ const bar=(key,value,min,max,baseline,threshold,selected=false)=>{
+  const valid=number(value)&&value>=min&&value<=max, pos=v=>Math.max(0,Math.min(100,(v-min)/(max-min)*100));
+  return `<div class="memory"><div style="display:flex;justify-content:space-between;gap:12px"><strong>${esc(labels[key]||key)} ${selected?'<span class="badge ok">本轮表达指导</span>':''}</strong><span>${esc(fmt(value))}</span></div>
+  <div style="position:relative;height:10px;background:var(--line);border-radius:5px;margin:10px 0">${valid?`<div style="height:100%;width:${pos(value)}%;background:var(--cyan);border-radius:5px"></div>`:''}${number(baseline)?`<span title="基线 ${fmt(baseline)}" style="position:absolute;left:${pos(baseline)}%;top:-3px;height:16px;border-left:2px solid var(--blue)"></span>`:''}${number(threshold)?`<span title="阈值 ${fmt(threshold)}" style="position:absolute;left:${pos(threshold)}%;top:-3px;height:16px;border-left:2px solid var(--amber)"></span>`:''}</div>
+  <div class="subtle">范围 ${min}～${max} · 基线 ${fmt(baseline)}${threshold!==undefined?' · 阈值 '+fmt(threshold):''}${valid&&number(threshold)&&value>=threshold?' · 已达阈值':''}</div></div>`;
+ };
+ const emotions=saved?.emotions||Object.fromEntries((guide.feelings||[]).filter(x=>number(x.intensity)).map(x=>[x.emotion,x.intensity]));
+ const keys=saved?.emotion_types||Object.keys(emotions);
+ const mood=state.mood||{}, needs=state.needs||{};
+ const motive=guide.contact_motive?.dominant_need;
+ return `<section class="card wide"><h3>Emotion / Mood / Need · 回合情绪快照</h3><p class="subtle">${saved?'保存于 '+esc(saved.updated_at||'未知时间'):'历史回合未保存完整 Emotion 和参数快照；仅展示已有数据，不用当前数值补历史。'} 蓝线：基线；黄线：联系阈值。达到阈值不代表一定发送，最终以 Response Plan 为准。</p>
+ <div class="grid"><div class="card"><h3>Emotion · 具体情绪（0～1）</h3>${keys.length?keys.map(k=>bar(k,emotions[k]??0,0,1,0,undefined,(guide.feelings||[]).some(x=>x.emotion===k))).join(''):'未记录完整情绪数值'}</div>
+ <div><div class="card"><h3>Mood · 整体心境（−1～1）</h3>${['pleasure','arousal','dominance'].map(k=>bar(k,mood[k],-1,1,state.mood_baselines?.[k],undefined,(guide.mood_tendency||[]).some(x=>x.axis===k))).join('')}</div>
+ <div class="card" style="margin-top:12px"><h3>Need · 当前需求（0～1）</h3>${['connection','closeness','reassurance','care','expression'].map(k=>bar(k,needs[k]?.value,0,1,needs[k]?.baseline,state.need_thresholds?.[k],motive===k)).join('')}<p class="subtle">只有 Need 驱动联系时，选中的需求才参与表达指导。</p></div></div></div></section>`;
+}
+function stages(d){const c=d.context_json||{}, plan=d.plan_json||{}, event=c.current_event||{};
+ if(c.chat_research?.mode==='main_thread')return [
+ ['接收事件',!!c.current_event],['基本上下文',!!c.context_snapshot],[c.emotion_gate?'并行情绪 → 等待点':'程序情绪处理',c.emotion_gate?!!c.emotion_gate.received:!!c.cognitive_state],
+ ['主线程判断 ↔ 查询',!!c.chat_research.model_calls?.length||!!c.chat_research.rounds?.length],
+ ['最终回复',!!d.response_json?.length],['保存／发送',d.delivery?.status==='available'],['记忆后台任务',d.post_turn_job?.status==='completed']
+ ].map((x,i,a)=>`<div class="stage ${x[1]?'':'off'}"><div class="dot"></div><div class="stage-name">${x[0]}</div></div>${i<a.length-1?'<div class="arrow"></div>':''}`).join('');
+ return [
+ ['接收事件',!!c.current_event],['构建情境',!!c.context_snapshot],['召回记忆',!!c.memory_context],['情绪处理',!!c.cognitive_state],['回复计划',!!Object.keys(plan).length],['工具（按需）',!!(event.tool_results||event.verified_tool_results?.length)],['生成回复',!!d.response_json?.length],['保存／发送',d.delivery?.status==='available'],['记忆后台任务',d.post_turn_job?.status==='completed']
+ ].map((x,i,a)=>`<div class="stage ${x[1]?'':'off'}"><div class="dot"></div><div class="stage-name">${x[0]}</div></div>${i<a.length-1?'<div class="arrow"></div>':''}`).join('')}
+function decision(plan,verdict,response,messages,delivery,status){
+ if(messages.length)return {kind:'sent',title:'消息已保存，可由客户端读取',reason:`已保存 ${messages.length} 条消息；不代表用户已读`};
+ if(status?.startsWith('failed'))return {kind:'rejected',title:'回合处理失败',reason:status};
+ if(delivery.can_send===false)return {kind:'blocked',title:'当前发送条件不满足',reason:delivery.suppression_reason||verdict.reason||'发送状态发生变化'};
+ if(plan.should_send===false)return {kind:'silent',title:'Response Plan 决定不发送',reason:plan.reason||'没有发送意图'};
+ if(verdict.reason==='empty_response')return {kind:'rejected',title:'生成结果为空',reason:'已决定发送，但没有得到有效回复；不是主动选择沉默'};
+ return {kind:'blocked',title:status==='committed'?'本回合未发送':'处理中或记录不完整',reason:verdict.reason||plan.reason||'历史字段请查看完整 Trace'};
+}
+function recallGroups(c){
+ const personal=Array.isArray(c.memory_context?.memories)?c.memory_context.memories:[];
+ const character=Array.isArray(c.character_evidence)?c.character_evidence:[];
+ let shared=[],warning='';
+ const block=String(c.supporting_knowledge||'').match(/<canonical_shared_history>([\s\S]*?)<\/canonical_shared_history>/);
+ if(block){try{const text=block[1],data=JSON.parse(text.slice(text.indexOf('{')));
+  shared=[...(data.reviewed_scenes||[]),...(data.source_excerpts||[])];
+ }catch{warning='共同经历记录格式无法解析，可查看完整 Trace。'}}
+ const relevance=c.memory_context?.relevance_filter;
+ const review=relevance?`筛选状态：${relevance.status}\n`+(relevance.decisions||[]).map(x=>`${x.memory_id} · ${{direct:'保留：直接相关',background:'保留：历史背景',drop:'过滤'}[x.decision]||x.decision} · ${x.reason}`).join('\n'):'';
+ return [{title:'个人记忆',source:'lmc',items:personal,warning:review},{title:'人物语料',source:'character',items:character},{title:'共同经历',source:'canonical',items:shared,warning}];
+}
+function recallView(groups,d,sensitiveClass){
+ const verdict=d.verdict_json||{}, receipts=[...(verdict.source_usage||[])];
+ for(const f of d.feedback||[]){if(f.kind==='source_usage'){try{const value=typeof f.value_json==='string'?JSON.parse(f.value_json):f.value_json;if(Array.isArray(value))receipts.push(...value)}catch{}}}
+ return groups.map(group=>`<div><h4>${group.title} · ${group.items.length}</h4>${group.warning?`<p class="subtle" style="white-space:pre-wrap">${esc(group.warning)}</p>`:''}${group.items.length?group.items.map(m=>{
+  const id=m.memory_id||m.id||m.chunk_id||m.history_id;
+  const used=receipts.some(r=>r.source===group.source&&r.id===id)||(group.source==='lmc'&&(verdict.used_memory_ids||[]).includes(id));
+  const kind=group.source==='lmc'?({lmc:'正式记忆',candidate:'辅助候选',raw_experience:'历史原文召回',reflection:'反思'}[m.memory_kind]||m.memory_kind||'个人记忆'):(group.source==='character'?'表达与行为参考':(m.chunk_id?'共同经历原文':'共同经历事件'));
+  const body=group.source==='character'?[m.context,m.character_logic,m.preferred_direction,m.example_output].filter(Boolean).join('\n'):m.content||m.summary||m.transcript_excerpt||m.text||'';
+  return `<div class="memory ${used?'used':'candidate'}"><div class="memory-id">${used?'✓ 已记录使用':'○ 已召回，未记录使用'} · ${esc(kind)} · ${esc(id||'—')} · ${esc((m.recall_channels||[]).join(', '))}</div><div class="${sensitiveClass}" style="white-space:pre-wrap">${esc(body)}</div></div>`;
+ }).join(''):'<p class="subtle">本回合未记录此类召回结果</p>'}</div>`).join('');
+}
+function researchView(c,sensitiveClass){
+ const research=c.chat_research;
+ if(!research)return '<section class="card wide"><h3>Agent 查询过程</h3><p class="subtle">此历史回合没有保存查询循环，不能推断为未调用工具。</p></section>';
+ const main=research.mode==='main_thread', calls=Array.isArray(research.model_calls)?research.model_calls:[], rounds=Array.isArray(research.rounds)?research.rounds:[];
+ const tools=rounds.flatMap(r=>Array.isArray(r.calls)?r.calls:[]);
+ const stops={replied:'主模型已生成回复',ready:'信息足够，结束查询',round_limit:'查询轮次已用尽',duplicate_calls:'重复查询达到上限',decision_failed:'决策失败，转入回复兜底',model_unavailable:'查询模型不可用'};
+ const outcomes={tool_request:'请求查询（不会发送给用户）',reply:'生成聊天回复',reply_before_emotion:'情绪返回前的回复已拦截（未发送）',invalid_output:'输出不符合协议'};
+ const ids=new Set(calls.flatMap(x=>[x.session_id,x.returned_session_id]).filter(Boolean));
+ const mismatch=ids.size>1;
+ return `<section class="card wide"><h3>Agent 查询过程 · ${main?'左然主线程':'历史辅助决策'}</h3>
+ <p class="subtle">${main?'同一聊天线程选择查询、读取结果并回复。程序执行工具并管理写操作授权；有 emotion.await 时，主线程在工具边界等待并行情绪结果，再自行回复。':'这是旧版回复前的辅助查询流程，不能当作主线程自主调用。'}</p>
+ ${c.emotion_agent?`<div class="message"><h4>情绪 Agent · 自主评估</h4><div class="kv">${field('停止原因',c.emotion_agent.stop_reason)}${field('执行 Appraisal',!!c.emotion_agent.appraisal_performed)}${field('评估需求更新',!!c.emotion_agent.need_update_performed)}${field('新增情绪实例',!!c.emotion_agent.event_emotion_changed)}${field('提出非中性需求更新',!!c.emotion_agent.event_need_changed)}</div>${(c.emotion_agent.steps||[]).map((step,i)=>`<div class="memory"><strong>${i+1}. ${esc({finish:'结束，保留已有状态',appraise:'深入评估事件',need_update:'评估需求变化'}[step.action]||step.action)}</strong> ${badge(step.status)}<div class="${sensitiveClass}">${esc(step.reason)}</div></div>`).join('')}<p class="subtle">执行评估不等于产生情绪变化；保持状态仍允许自然时间衰减。只有通过校验后才提交事件状态。</p></div>`:''}
+ ${c.emotion_gate?`<div class="message"><h4>并行情绪 · emotion.await</h4><div class="kv">${field('处理状态',c.emotion_gate.status)}${field('主线程已接收',!!c.emotion_gate.received)}${field('情绪处理耗时',c.emotion_gate.processing_ms==null?'未记录':(c.emotion_gate.processing_ms/1000).toFixed(2)+' 秒')}${field('阻塞等待耗时',c.emotion_gate.wait_ms==null?'尚未等待':(c.emotion_gate.wait_ms/1000).toFixed(2)+' 秒')}${field('等待前回复被拦截',!!c.emotion_gate.premature_reply_blocked)}${field('预算结束时等待',!!c.emotion_gate.wait_at_budget_boundary)}${field('错误',c.emotion_gate.error||'无')}</div><p class="subtle">情绪结果只作为主线程的内部状态；最终文字由主线程生成，没有合并或改写已生成回复。等待耗时与情绪总处理耗时不同。</p></div>`:''}
+ <div class="kv">${field('执行模式',main?'主聊天线程':'独立辅助调用（旧版）')}${field('会话 ID',research.session_id||'未记录')}${field('停止原因',stops[research.stop_reason]||research.stop_reason||'处理中')}${field('已记录查询轮次',rounds.length)}${field('成功 / 失败 / 跳过',`${tools.filter(t=>t.status==='completed').length} / ${tools.filter(t=>t.status==='failed').length} / ${tools.filter(t=>t.status==='duplicate_skipped').length}`)}</div>
+ ${mismatch?'<p class="errorbox">检测到会话 ID 不一致，请检查调用记录。</p>':''}
+ <h4>主模型调用</h4>${calls.length?calls.map(call=>`<div class="memory"><strong>第 ${esc(call.index)} 次 · ${esc(call.phase==='final_only'?'预算用尽后的最终回复':outcomes[call.outcome]||'正在判断')}</strong> ${badge(call.status)}<div class="subtle">${esc(call.duration_ms==null?'耗时未记录':(call.duration_ms/1000).toFixed(2)+' 秒')} · 会话 ${esc(call.session_id||'首次创建')} → ${esc(call.returned_session_id||'未记录')}${call.error?' · '+esc(call.error):''}</div></div>`).join(''):'<p class="subtle">此回合没有逐次调用计时，不能据此还原耗时。</p>'}
+ <h4>查询与结果</h4>${rounds.map(round=>`<div class="memory"><strong>第 ${esc(round.round)} 轮</strong>${round.error?` ${badge(round.error)}`:''}
+ ${(round.calls||[]).length?(round.calls||[]).map(call=>`<div class="message"><strong>${esc(call.tool)}</strong> ${badge(call.status)}
+ <div class="${sensitiveClass}">参数：${esc(call.query||'无')}</div>
+ ${call.status==='duplicate_skipped'?'<p class="subtle">重复请求已跳过，没有再次执行工具。</p>':''}
+ ${call.error?`<div class="errorbox">${esc(call.error)}</div>`:''}
+ ${call.data!==undefined?`<details><summary>查询回执（成功不代表相关或已使用）</summary><pre class="${sensitiveClass}">${json(call.data)}</pre></details>`:''}</div>`).join(''):'<p class="subtle">本轮没有工具请求；可能直接回复、结束查询或尚在处理中，以停止原因与调用记录为准。</p>'}</div>`).join('')}
+ <p class="subtle">调用耗时仅覆盖对应模型请求，不能相加当作整轮端到端耗时；还包含工具、情绪及保存等阶段。是否真正使用来源，请看三类召回的使用记录。</p></section>`;
+}
+function responsePromptView(c,sensitiveClass){
+ const requests=c.response_requests||[];
+ return `<section class="card wide"><h3>Response → LLM · 完整 Prompt</h3><p class="subtle">应用提交给模型 CLI 的完整文本，未截断。续接会话的历史消息、CLI 自带系统指令及图片内容不包含在这段文本中。最后一次调用不一定已成功生成回复。</p>${requests.length?requests.map((r,i)=>{const call=(c.chat_research?.model_calls||[]).find(x=>x.request_index===i);const label=call?({tool_request:'工具请求',reply:'聊天回复',invalid_output:'协议异常'}[call.outcome]||'处理中'):'用途未记录';return `<details ${i===requests.length-1?'open':''}><summary>第 ${i+1} 次调用${i===requests.length-1?' · 最后一次':''} · ${esc(label)} · ${esc(r.model||'默认模型')}</summary><div class="kv">${field('Provider',r.provider)}${field('会话 ID',r.session_id||'新会话')}${field('图片附件',r.image_paths||[])}</div><pre class="${sensitiveClass}">${esc(r.prompt)}</pre></details>`}).join(''):'<p class="subtle">本回合未保存 Response Prompt（历史记录或未调用生成）；无法还原当时完整输入。</p>'}</section>`;
+}
+function renderDetail(d){
+ const c=d.context_json||{}, current=c.current_event||{}, unified=c.unified_event||{}, route=c.processing_route||{}, mem=c.memory_context||{}, plan=d.plan_json||{}, verdict=d.verdict_json||{}, memories=mem.memories||[];
+ const snapshot=c.context_snapshot||{}, delivery=c.delivery_policy||{}, libra=snapshot.libra||{}, user=snapshot.user||{};
+ const tools={executions:c.tool_executions,results:current.tool_results,verified:current.verified_tool_results,actions:d.action};
+ const response=Array.isArray(d.response_json)?d.response_json:(d.response_json?[d.response_json]:[]), messages=d.delivered_messages||[], used=new Set(verdict.used_memory_ids||[]), outcome=decision(plan,verdict,response,messages,delivery,d.status);
+ const sensitiveClass=reveal?'sensitive reveal':'sensitive', groups=recallGroups(c), recallCount=groups.reduce((n,g)=>n+g.items.length,0);
+ $('#main').innerHTML=`
+ <div class="topbar"><div><h2>${esc(d.turn_id)}</h2><p>${esc(d.source)} · ${esc(date(d.created_at))}</p></div><label class="privacy"><input id="reveal" type="checkbox" ${reveal?'checked':''}>显示敏感内容（仅限本机）</label></div>
+ <div class="summary"><div class="metric"><span>回合状态</span><b>${esc(d.status)}</b></div><div class="metric"><span>路由</span><b>${esc(route.kind||'—')}</b></div><div class="metric"><span>三类召回合计</span><b>${recallCount}</b></div><div class="metric"><span>上下文版本</span><b>${esc(d.context_revision_count||0)}</b></div></div>
+ <div class="card pipeline">${stages(d)}</div>
+ <div class="grid">
+  <section class="card"><h3>[1] 触发</h3><div class="kv">${field('事件类型',unified.event_type||current.type)}${field('事件描述',unified.description||current.content)}${field('事件 ID',unified.event_id||current.event_id)}${field('触发来源',d.source)}${field('来源键',d.source_key)}</div></section>
+  <section class="card"><h3>情绪处理</h3><div class="kv">${field('情绪处理模式',route.appraisal_mode)}${field('降级信息',c.degraded_components||[])}</div><details><summary>内部情绪与 Appraisal（不是 Response 原始输入）</summary><pre class="${sensitiveClass}">${json({appraisal:c.appraisal,state:c.cognitive_state})}</pre></details></section>
+  ${currentContext(snapshot,sensitiveClass)}
+  ${affectView(c,plan)}
+  ${researchView(c,sensitiveClass)}
+  <section class="card wide"><h3>[3] 三类召回</h3><p class="subtle">召回表示进入本轮上下文；使用标记以保存的使用记录为准。</p>${recallView(groups,d,sensitiveClass)}</section>
+  <section class="card"><h3>[4] Response Plan</h3><div class="decision ${outcome.kind}"><strong>${esc(outcome.title)}</strong><div>${esc(outcome.reason)}</div></div><div class="kv">${field('主动联系',delivery.proactive)}${field('发送条件允许',delivery.can_send)}${field('是否决定发送',plan.should_send)}${field('发送理由',plan.reason)}${field('表达意图',plan.expression_intent)}${field('表达指导',plan.expression_guidance||{})}</div></section>
+  <section class="card"><h3>[5] 发送与记忆后台任务</h3><div class="kv">${field('投递状态',d.delivery?.status)}${field('发送结果',verdict.reason)}${field('推送状态',d.notification?.status)}${field('后台任务',d.post_turn_job?.status)}${field('后台尝试次数',d.post_turn_job?.attempts)}${field('后台错误',d.post_turn_job?.error_code)}</div><p class="subtle">当前聊天不再进行内容审核或润色。后台任务完成只表示本轮处理结束，不保证新增长期记忆。灰色节点表示未记录或未发生，不等于失败。此图是持久化回合概览，不是逐步计时日志。</p></section>
+  ${responsePromptView(c,sensitiveClass)}
+  <section class="card wide"><h3>程序工具执行与审计</h3><p class="subtle">包含程序管理的操作；Agent 选择的查询请看上方查询过程。</p>${Object.values(tools).some(v=>v&&(Array.isArray(v)?v.length:Object.keys(v).length))?`<pre class="${sensitiveClass}">${json(tools)}</pre>`:'<span class="subtle">本回合没有工具执行记录</span>'}</section>
+  <details class="card wide"><summary>人物语料与共同经历等召回资料</summary><pre class="${sensitiveClass}">${json({character:c.character_evidence,supporting_knowledge:c.supporting_knowledge})}</pre></details>
+  <section class="card wide"><h3>[6] 最终消息</h3>${messages.length?messages.map(m=>`<div class="message ${sensitiveClass}"><span class="memory-id">#${esc(m.id)} · ${esc(m.message_type)} · ${esc(date(m.created_at))}</span><div>${esc(m.content)}</div></div>`).join(''):`<div class="decision ${outcome.kind}">${esc(outcome.title)}：${esc(outcome.reason)}</div>${response.length?`<details><summary>未投递候选</summary><pre class="${sensitiveClass}">${json(response)}</pre></details>`:''}`}</section>
+  <section class="card wide"><h3>回合反馈（历史记录可能含旧审核字段）</h3>${(d.feedback||[]).length?`<pre class="${sensitiveClass}">${json(d.feedback)}</pre>`:'<span class="subtle">无反馈记录</span>'}</section>
+  <details class="card wide"><summary>完整 Trace JSON</summary><pre class="${sensitiveClass}">${json(d)}</pre></details>
+ </div>`;
+ $('#reveal').onchange=e=>{reveal=e.target.checked;document.querySelectorAll('.sensitive').forEach(x=>x.classList.toggle('reveal',reveal))};
+}
+async function loadDetail(id){selected=id;loadTurns();$('#main').innerHTML='<div class="empty">加载 Trace…</div>';try{const r=await fetch('/cognition/turns/'+encodeURIComponent(id));if(!r.ok)throw Error(r.status);renderDetail(await r.json())}catch(e){$('#main').innerHTML=`<div class="errorbox">无法加载 Trace：${esc(e.message)}</div>`}}
+$('#refresh').onclick=()=>selected?loadDetail(selected):loadTurns();$('#status').onchange=loadTurns;loadTurns();
+</script>
+</body>
+</html>

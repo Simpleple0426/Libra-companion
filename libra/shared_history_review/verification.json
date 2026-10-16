@@ -1,0 +1,34 @@
+{
+  "source_files": 26,
+  "entries": 164,
+  "all_pending_user_review": true,
+  "unique_ids": true,
+  "all_source_ranges_valid": true,
+  "source_hashes_unchanged": true,
+  "database_counts_unchanged": true,
+  "database_counts": {
+    "cognition.db": {
+      "canonical_shared_history": 0,
+      "canonical_shared_history_chunk_embeddings": 0,
+      "canonical_shared_history_chunks": 0,
+      "canonical_shared_history_chunks_fts": 0,
+      "canonical_shared_history_embeddings": 0,
+      "canonical_shared_history_fts": 0,
+      "character_corpus_v2": 0,
+      "character_corpus_v2_embeddings": 0,
+      "character_corpus_v2_fts": 0
+    },
+    "content.db": {},
+    "libra.db": {}
+  },
+  "event_types": {
+    "剧情中发生的共同互动": 157,
+    "共同往事的明确回忆": 2,
+    "远程共同经历": 3,
+    "独白呈现的互动": 2
+  },
+  "limitations": [
+    "Source coverage is chapter-based, not a line-by-line exhaustive audit.",
+    "Counts establish logical emptiness, not secure erasure."
+  ]
+}

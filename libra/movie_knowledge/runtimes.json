@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "checked_at": "2026-09-27",
+  "semantics": "Reference runtime for life simulation, not measured media-file runtime. Edition differences are retained in edition.",
+  "movies": {
+    "about_time": {
+      "duration_seconds": 7380,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/About_Time_(2013_film)"
+    },
+    "coco": {
+      "duration_seconds": 6300,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Coco_(2017_film)"
+    },
+    "gone_with_the_wind": {
+      "duration_seconds": 13260,
+      "edition": "film_without_intermission_music",
+      "source_url": "https://en.wikipedia.org/wiki/Gone_with_the_Wind_(film)"
+    },
+    "titanic": {
+      "duration_seconds": 11700,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Titanic_(1997_film)"
+    },
+    "benjamin_button": {
+      "duration_seconds": 9960,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/The_Curious_Case_of_Benjamin_Button_(film)"
+    },
+    "pulp_fiction": {
+      "duration_seconds": 9240,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Pulp_Fiction"
+    },
+    "love_letter": {
+      "duration_seconds": 7020,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Love_Letter_(1995_film)"
+    },
+    "pride_and_prejudice": {
+      "duration_seconds": 7620,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Pride_%26_Prejudice_(2005_film)"
+    },
+    "the_notebook": {
+      "duration_seconds": 7380,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/The_Notebook"
+    },
+    "me_before_you": {
+      "duration_seconds": 6600,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Me_Before_You_(film)"
+    },
+    "la_la_land": {
+      "duration_seconds": 7680,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/La_La_Land"
+    },
+    "space_odyssey_2001": {
+      "duration_seconds": 8340,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/2001:_A_Space_Odyssey"
+    },
+    "dead_poets_society": {
+      "duration_seconds": 7680,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Dead_Poets_Society"
+    },
+    "the_pianist": {
+      "duration_seconds": 9900,
+      "edition": "original_cut",
+      "source_url": "https://en.wikipedia.org/wiki/The_Legend_of_1900"
+    },
+    "heidi": {
+      "duration_seconds": 6660,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Heidi_(2015_film)"
+    },
+    "atonement": {
+      "duration_seconds": 7380,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Atonement_(2007_film)"
+    },
+    "shawshank": {
+      "duration_seconds": 8520,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/The_Shawshank_Redemption"
+    },
+    "still_life_2013": {
+      "duration_seconds": 5520,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Still_Life_(2013_film)"
+    },
+    "a_man_called_ove": {
+      "duration_seconds": 6960,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/A_Man_Called_Ove_(film)"
+    },
+    "the_intouchables": {
+      "duration_seconds": 6720,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/The_Intouchables"
+    },
+    "the_chorus": {
+      "duration_seconds": 5760,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/The_Chorus_(2004_film)"
+    },
+    "before_sunrise": {
+      "duration_seconds": 6060,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Before_Sunrise"
+    },
+    "before_sunset": {
+      "duration_seconds": 4800,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Before_Sunset"
+    },
+    "before_midnight": {
+      "duration_seconds": 6540,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Before_Midnight"
+    },
+    "amelie": {
+      "duration_seconds": 7380,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Am%C3%A9lie"
+    },
+    "here_2024": {
+      "duration_seconds": 6240,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Here_(2024_film)"
+    },
+    "flipped": {
+      "duration_seconds": 5400,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Flipped_(2010_film)"
+    },
+    "scent_of_a_woman": {
+      "duration_seconds": 9420,
+      "edition": "reference_release",
+      "source_url": "https://watch.afi.com/movie/scent-of-a-woman"
+    },
+    "witness_for_the_prosecution": {
+      "duration_seconds": 6960,
+      "edition": "reference_release",
+      "source_url": "https://en.wikipedia.org/wiki/Witness_for_the_Prosecution_(1957_film)"
+    },
+    "million_ways_west": {
+      "duration_seconds": 6960,
+      "edition": "theatrical",
+      "source_url": "https://www.imdb.com/title/tt2557490/technical/"
+    },
+    "twelve_angry_men": {
+      "duration_seconds": 5700,
+      "edition": "criterion",
+      "source_url": "https://www.criterion.com/current/posts/965-12-angry-men"
+    }
+  },
+  "collections": {
+    "before_trilogy": [
+      {
+        "movie_id": "before_sunrise",
+        "title": "爱在黎明破晓前",
+        "year": 1995
+      },
+      {
+        "movie_id": "before_sunset",
+        "title": "爱在日落黄昏时",
+        "year": 2004
+      },
+      {
+        "movie_id": "before_midnight",
+        "title": "爱在午夜降临前",
+        "year": 2013
+      }
+    ]
+  }
+}

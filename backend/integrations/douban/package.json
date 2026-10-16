@@ -1,0 +1,5 @@
+{
+  "name": "libra-douban-adapter",
+  "private": true,
+  "dependencies": {"douban-mcp-cli": "1.0.0-alpha.0"}
+}

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "ttl_minutes": {
+    "user.status": 120,
+    "libra.fatigue": 30
+  },
+  "location_aliases": {
+    "家": "home",
+    "餐厅": "home",
+    "家里的餐厅": "home",
+    "家-客厅": "home",
+    "家-卧室": "home",
+    "家-书房": "home",
+    "忒弥斯律师事务所": "office",
+    "律所": "office",
+    "办公室": "office",
+    "公司": "office",
+    "学校": "school",
+    "医院": "medical_facility"
+  }
+}

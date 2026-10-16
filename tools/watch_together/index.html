@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>和左然一起看</title>
+<style>
+body{margin:0;background:#f2eee8;color:#293b3a;font:16px/1.7 "Microsoft YaHei",sans-serif}main{max-width:840px;margin:40px auto;padding:28px}h1{font-size:32px;margin-bottom:4px}.card{background:#fffdf9;padding:24px;border-radius:18px;margin:20px 0}label{display:block;margin:12px 0 5px}input,select{box-sizing:border-box;padding:12px;border:1px solid #ccc9bf;border-radius:8px;width:100%;font:inherit}button{background:#365e59;color:white;border:0;border-radius:9px;padding:12px 20px;margin:14px 8px 0 0;font:inherit;cursor:pointer}button:disabled{opacity:.4;cursor:default}video{width:100%;max-height:360px;background:#162623;border-radius:10px}small,.muted{color:#63716c}#status{font-weight:bold}li{margin:12px 0}#comments{padding-left:22px}.row{display:flex;gap:16px}.row>*{flex:1}summary{cursor:pointer}
+</style>
+<main><div class="muted">共同观影 · 电脑提供画面，手机也能收到评论</div><h1>和左然一起看</h1>
+<p>选一个电影窗口，让他陪你看一会儿。画面中最好带有字幕。</p>
+<section class="card"><details id="connection"><summary>连接左然</summary>
+<label for="backend">左然后端地址</label><input id="backend" type="password" autocomplete="off" placeholder="粘贴完整 HTTPS 私人连接地址">
+<label for="token">陪看连接码</label><input id="token" type="password" placeholder="已配对时可留空" autocomplete="off">
+<button id="connect">测试连接</button></details>
+<div class="row"><div><label for="title">片名（可不填）</label><input id="title" maxlength="200"></div><div><label for="frequency">陪你聊的频率</label><select id="frequency"><option value="quiet">安静陪我 · 最快约5分钟一次</option><option value="normal" selected>偶尔聊聊 · 最快约2分钟一次</option><option value="chatty">多说一点 · 最快约1分钟一次</option></select></div></div>
+<label for="subtitle">字幕文件（可选，SRT / VTT）</label><input id="subtitle" type="file" accept=".srt,.vtt">
+<p id="subtitleStatus" class="muted">不导入也可以：左然会尝试阅读共享画面中的字幕，结合画面理解剧情。请打开播放器字幕。</p>
+<div class="row"><div><label for="position">播放器当前时间</label><input id="position" value="00:00" placeholder="00:12:30"></div><div><label for="speed">电影播放倍速</label><input id="speed" type="number" min="0.25" max="3" step="0.25" value="1"></div></div>
+<button id="sync">校准播放时间</button><p>陪看进度：<strong id="playhead">00:00:00</strong></p>
+<p class="muted">时间由你校准，不会自动读取外部播放器。暂停电影时也请暂停陪看；快进或回退后重新校准。</p>
+<details><summary>核对已播放的字幕</summary><p id="subtitlePreview" style="white-space:pre-wrap">此进度还没有已播放完的字幕</p></details>
+<p id="sentStatus" class="muted">尚未分析画面与字幕</p>
+<button id="start">选择电影窗口，开始陪看</button><button id="pause" disabled>暂停陪看</button><button id="stop" disabled>结束</button>
+<p id="status" role="status" aria-live="polite">尚未开始</p><small>只采集你选择的画面，不采集声音。开启后每15秒检查一次；模型可能保持安静。电影暂停或快进时，请先暂停陪看。</small></section>
+<section class="card" aria-labelledby="ocrTitle"><h2 id="ocrTitle">截图里读到的字幕</h2><p id="ocrStatus" role="status">等待第一次画面分析</p><p id="ocrText" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><small>这是最近一次分析截图时读到的文字，可能有识别误差。按所选分析频率更新，不是实时字幕；没有发表评论也会显示识别结果。导入文件中的字幕可在上方单独核对。</small></section>
+<section class="card"><video id="preview" autoplay muted playsinline></video><p class="muted">这是共享画面的本地预览。评论也会进入手机 App 的电影室。</p><ol id="comments" aria-live="polite"></ol></section>
+</main><script src="/timeline.js"></script><script src="/app.js"></script></html>

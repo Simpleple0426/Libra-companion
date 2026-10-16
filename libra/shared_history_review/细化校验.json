@@ -1,0 +1,28 @@
+{
+  "selected_parent_count": 119,
+  "event_count": 166,
+  "split_parent_count": 46,
+  "deleted_count": 45,
+  "original_csv_unchanged": true,
+  "source_markdown_unchanged": true,
+  "all_excerpts_exact": true,
+  "no_deleted_parent_in_output": true,
+  "database_counts_unchanged": true,
+  "database_counts": {
+    "cognition.db": {
+      "canonical_shared_history": 0,
+      "canonical_shared_history_chunk_embeddings": 0,
+      "canonical_shared_history_chunks": 0,
+      "canonical_shared_history_chunks_fts": 0,
+      "canonical_shared_history_embeddings": 0,
+      "canonical_shared_history_fts": 0,
+      "character_corpus_v2": 0,
+      "character_corpus_v2_embeddings": 0,
+      "character_corpus_v2_fts": 0
+    },
+    "content.db": {},
+    "libra.db": {}
+  },
+  "four_partial_edits_have_restricted_excerpts": true,
+  "source_file_count": 26
+}

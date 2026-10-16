@@ -1,0 +1,2002 @@
+{
+  "version": "confirmed-household-catalog-v1",
+  "source_document": "docs/character/左然家庭空间与物品清单.md",
+  "authorization": "user_requested_all_household_spaces_and_items_2026-09-27",
+  "source_tree_sha256": "e55c7d5dbce0ebcf77cc60c3278549078a208a0d49b3b760da635d2ed1783e20",
+  "covered_tree_lines": [
+    "Wi-Fi：律狮的专属频道（覆盖两层）",
+    "入户门",
+    "鞋柜：日常鞋、室内拖鞋",
+    "换鞋凳",
+    "挂衣钩：外套、随身包",
+    "置物盘：钥匙",
+    "雨伞架：雨伞",
+    "沙发",
+    "茶几",
+    "电视、电视柜、遥控器",
+    "路由器（暂建议放电视柜处）",
+    "扫地机器人、充电座（暂建议放客厅角落；机器人位置随移动变化）",
+    "跑步机（客厅右侧靠窗、接近阳台，避开通行路线）",
+    "窗户、窗帘",
+    "绿植",
+    "通往阳台的玻璃推拉门",
+    "冰箱：冷藏区、冷冻区",
+    "灶台、净烟机",
+    "微波炉、电饭煲、电热水壶",
+    "微蒸烤一体机",
+    "洗碗机",
+    "水槽、水龙头、沥水架",
+    "备餐台",
+    "橱柜：锅具、碗盘、杯子",
+    "抽屉：筷子、勺子、刀具、砧板",
+    "调料收纳：油、盐及常用调料",
+    "清洁用品：洗洁精、海绵、抹布",
+    "垃圾桶",
+    "餐桌",
+    "餐椅",
+    "马桶",
+    "洗手台、水龙头、镜子",
+    "洗手液、擦手巾、卫生纸",
+    "垃圾桶",
+    "休闲椅",
+    "小圆桌",
+    "盆栽",
+    "晾衣杆",
+    "浇水壶",
+    "双人床：床垫、枕头、被褥",
+    "床头柜、床头灯",
+    "落地窗、窗帘",
+    "个人物品：小熊公仔",
+    "梳妆台、镜子、座椅",
+    "梳子、日常护肤品、化妆品",
+    "抽屉：首饰、发饰",
+    "纪念物品：大雁戒托、红豆项链（详见纪念信息）",
+    "沙发",
+    "投影仪、遥控器",
+    "衣柜：左然衣物、用户衣物",
+    "衣架、衣物抽屉",
+    "全身镜",
+    "挂烫机",
+    "马桶",
+    "洗手台、镜柜",
+    "淋浴区",
+    "浴缸（当前布局草案中保留）",
+    "毛巾架：毛巾、浴巾",
+    "牙刷、牙膏、洗发水、沐浴露",
+    "吹风机",
+    "洗衣机、烘干机（新增摆放建议，需核对空间）",
+    "卫生纸、清洁用品、垃圾桶",
+    "书桌、工作椅、台灯",
+    "电脑、键盘、鼠标",
+    "书架：书籍",
+    "文件柜：工作资料、家庭文件",
+    "笔记本、笔",
+    "插座、充电器",
+    "扶手",
+    "照明"
+  ],
+  "places": {
+    "home": {
+      "name": "家",
+      "parent": null
+    },
+    "home.f1": {
+      "name": "一层",
+      "parent": "home"
+    },
+    "home.f2": {
+      "name": "二层",
+      "parent": "home"
+    },
+    "home.stairs": {
+      "name": "楼梯",
+      "parent": "home"
+    },
+    "home.f1.entry": {
+      "name": "玄关",
+      "parent": "home.f1"
+    },
+    "home.f1.living": {
+      "name": "客厅",
+      "parent": "home.f1"
+    },
+    "home.f1.kitchen": {
+      "name": "厨房",
+      "parent": "home.f1"
+    },
+    "home.f1.dining": {
+      "name": "餐厅",
+      "parent": "home.f1"
+    },
+    "home.f1.bathroom": {
+      "name": "一层卫生间",
+      "parent": "home.f1"
+    },
+    "home.f1.balcony": {
+      "name": "阳台",
+      "parent": "home.f1"
+    },
+    "home.f2.bedroom": {
+      "name": "卧室",
+      "parent": "home.f2"
+    },
+    "home.f2.vanity": {
+      "name": "梳妆区",
+      "parent": "home.f2"
+    },
+    "home.f2.media": {
+      "name": "影音区",
+      "parent": "home.f2"
+    },
+    "home.f2.dressing": {
+      "name": "衣帽间",
+      "parent": "home.f2"
+    },
+    "home.f2.bathroom": {
+      "name": "二层卫生间",
+      "parent": "home.f2"
+    },
+    "home.f2.study": {
+      "name": "书房",
+      "parent": "home.f2"
+    }
+  },
+  "objects": {
+    "home.object.c69627035ead": {
+      "name": "家庭 Wi-Fi",
+      "parent": "home",
+      "source_line": "Wi-Fi：律狮的专属频道（覆盖两层）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "ssid": "律狮的专属频道",
+      "coverage": [
+        "home.f1",
+        "home.f2"
+      ],
+      "connection_rule": "device_wifi_enabled_and_network_available_then_auto_connect; disconnect_outside_coverage",
+      "availability": null,
+      "kind": "network"
+    },
+    "home.f1.entry.object.37dca02338d1": {
+      "name": "入户门",
+      "parent": "home.f1.entry",
+      "source_line": "入户门",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.entry.object.952406c955f5": {
+      "name": "鞋柜",
+      "parent": "home.f1.entry",
+      "source_line": "鞋柜：日常鞋、室内拖鞋",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f1.entry.object.a1d4ef369105": {
+      "name": "日常鞋",
+      "parent": "home.f1.entry",
+      "source_line": "鞋柜：日常鞋、室内拖鞋",
+      "container_id": "home.f1.entry.object.952406c955f5",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.entry.object.df7405fd5efd": {
+      "name": "室内拖鞋",
+      "parent": "home.f1.entry",
+      "source_line": "鞋柜：日常鞋、室内拖鞋",
+      "container_id": "home.f1.entry.object.952406c955f5",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.entry.object.5fa41cdfae95": {
+      "name": "换鞋凳",
+      "parent": "home.f1.entry",
+      "source_line": "换鞋凳",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.entry.object.00c90f76ae9b": {
+      "name": "挂衣钩",
+      "parent": "home.f1.entry",
+      "source_line": "挂衣钩：外套、随身包",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f1.entry.object.17191e6e1863": {
+      "name": "外套",
+      "parent": "home.f1.entry",
+      "source_line": "挂衣钩：外套、随身包",
+      "container_id": "home.f1.entry.object.00c90f76ae9b",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.entry.object.b89245dada52": {
+      "name": "随身包",
+      "parent": "home.f1.entry",
+      "source_line": "挂衣钩：外套、随身包",
+      "container_id": "home.f1.entry.object.00c90f76ae9b",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.entry.object.156dd9ff3aeb": {
+      "name": "置物盘",
+      "parent": "home.f1.entry",
+      "source_line": "置物盘：钥匙",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f1.entry.object.6d132744a95c": {
+      "name": "钥匙",
+      "parent": "home.f1.entry",
+      "source_line": "置物盘：钥匙",
+      "container_id": "home.f1.entry.object.156dd9ff3aeb",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.entry.object.77ddd8b91a6f": {
+      "name": "雨伞架",
+      "parent": "home.f1.entry",
+      "source_line": "雨伞架：雨伞",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f1.entry.object.a86eaeb98f4c": {
+      "name": "雨伞",
+      "parent": "home.f1.entry",
+      "source_line": "雨伞架：雨伞",
+      "container_id": "home.f1.entry.object.77ddd8b91a6f",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.961085f3c7ef": {
+      "name": "沙发",
+      "parent": "home.f1.living",
+      "source_line": "沙发",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.863c7f5444c5": {
+      "name": "茶几",
+      "parent": "home.f1.living",
+      "source_line": "茶几",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.23777e3e3a73": {
+      "name": "电视",
+      "parent": "home.f1.living",
+      "source_line": "电视、电视柜、遥控器",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.948b1208abe3": {
+      "name": "电视柜",
+      "parent": "home.f1.living",
+      "source_line": "电视、电视柜、遥控器",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.33d3ef284743": {
+      "name": "遥控器",
+      "parent": "home.f1.living",
+      "source_line": "电视、电视柜、遥控器",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.e8c68b5e46c6": {
+      "name": "路由器",
+      "parent": "home.f1.living",
+      "source_line": "路由器（暂建议放电视柜处）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "placement": "客厅电视柜处；清单建议位置"
+    },
+    "home.f1.living.object.b98d851ac719": {
+      "name": "扫地机器人",
+      "parent": "home.f1.living",
+      "source_line": "扫地机器人、充电座（暂建议放客厅角落；机器人位置随移动变化）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "cleaning_scope": null,
+      "activation_method": null,
+      "movable": true
+    },
+    "home.f1.living.object.f062f3f690d3": {
+      "name": "充电座",
+      "parent": "home.f1.living",
+      "source_line": "扫地机器人、充电座（暂建议放客厅角落；机器人位置随移动变化）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "placement": "客厅角落；清单建议位置"
+    },
+    "home.f1.living.object.1fc91987002c": {
+      "name": "跑步机",
+      "parent": "home.f1.living",
+      "source_line": "跑步机（客厅右侧靠窗、接近阳台，避开通行路线）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "placement": "客厅右侧靠窗、接近阳台，避开通行路线"
+    },
+    "home.f1.living.object.da098a22509a": {
+      "name": "窗户",
+      "parent": "home.f1.living",
+      "source_line": "窗户、窗帘",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.12bf47489e73": {
+      "name": "窗帘",
+      "parent": "home.f1.living",
+      "source_line": "窗户、窗帘",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.a41899f8cc67": {
+      "name": "绿植",
+      "parent": "home.f1.living",
+      "source_line": "绿植",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.living.object.62996ea92a62": {
+      "name": "通往阳台的玻璃推拉门",
+      "parent": "home.f1.living",
+      "source_line": "通往阳台的玻璃推拉门",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.f8781a5f97ce": {
+      "name": "冰箱",
+      "parent": "home.f1.kitchen",
+      "source_line": "冰箱：冷藏区、冷冻区",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f1.kitchen.object.8e37ad1bfa57": {
+      "name": "冷藏区",
+      "parent": "home.f1.kitchen",
+      "source_line": "冰箱：冷藏区、冷冻区",
+      "container_id": "home.f1.kitchen.object.f8781a5f97ce",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.84607fd001b7": {
+      "name": "冷冻区",
+      "parent": "home.f1.kitchen",
+      "source_line": "冰箱：冷藏区、冷冻区",
+      "container_id": "home.f1.kitchen.object.f8781a5f97ce",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.05d88c18aa65": {
+      "name": "灶台",
+      "parent": "home.f1.kitchen",
+      "source_line": "灶台、净烟机",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.128aae859520": {
+      "name": "净烟机",
+      "parent": "home.f1.kitchen",
+      "source_line": "灶台、净烟机",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.dd63d785bf04": {
+      "name": "微波炉",
+      "parent": "home.f1.kitchen",
+      "source_line": "微波炉、电饭煲、电热水壶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.c83e8f83ca55": {
+      "name": "电饭煲",
+      "parent": "home.f1.kitchen",
+      "source_line": "微波炉、电饭煲、电热水壶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.a9eb2374a2c4": {
+      "name": "电热水壶",
+      "parent": "home.f1.kitchen",
+      "source_line": "微波炉、电饭煲、电热水壶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.a2cd3f4cb861": {
+      "name": "微蒸烤一体机",
+      "parent": "home.f1.kitchen",
+      "source_line": "微蒸烤一体机",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.19e862b83b39": {
+      "name": "洗碗机",
+      "parent": "home.f1.kitchen",
+      "source_line": "洗碗机",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.6db6047b3301": {
+      "name": "水槽",
+      "parent": "home.f1.kitchen",
+      "source_line": "水槽、水龙头、沥水架",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.81ecf135e563": {
+      "name": "水龙头",
+      "parent": "home.f1.kitchen",
+      "source_line": "水槽、水龙头、沥水架",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.29d0dc69251e": {
+      "name": "沥水架",
+      "parent": "home.f1.kitchen",
+      "source_line": "水槽、水龙头、沥水架",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.3fca45670206": {
+      "name": "备餐台",
+      "parent": "home.f1.kitchen",
+      "source_line": "备餐台",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.611b3a0607a3": {
+      "name": "橱柜",
+      "parent": "home.f1.kitchen",
+      "source_line": "橱柜：锅具、碗盘、杯子",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f1.kitchen.object.de3fe6ac0313": {
+      "name": "锅具",
+      "parent": "home.f1.kitchen",
+      "source_line": "橱柜：锅具、碗盘、杯子",
+      "container_id": "home.f1.kitchen.object.611b3a0607a3",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.845cf450a342": {
+      "name": "碗盘",
+      "parent": "home.f1.kitchen",
+      "source_line": "橱柜：锅具、碗盘、杯子",
+      "container_id": "home.f1.kitchen.object.611b3a0607a3",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.95f9e8e79208": {
+      "name": "杯子",
+      "parent": "home.f1.kitchen",
+      "source_line": "橱柜：锅具、碗盘、杯子",
+      "container_id": "home.f1.kitchen.object.611b3a0607a3",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.3bf97e926567": {
+      "name": "抽屉",
+      "parent": "home.f1.kitchen",
+      "source_line": "抽屉：筷子、勺子、刀具、砧板",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f1.kitchen.object.399893f69b9b": {
+      "name": "筷子",
+      "parent": "home.f1.kitchen",
+      "source_line": "抽屉：筷子、勺子、刀具、砧板",
+      "container_id": "home.f1.kitchen.object.3bf97e926567",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.72407ec665b5": {
+      "name": "勺子",
+      "parent": "home.f1.kitchen",
+      "source_line": "抽屉：筷子、勺子、刀具、砧板",
+      "container_id": "home.f1.kitchen.object.3bf97e926567",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.a1a89e50b237": {
+      "name": "刀具",
+      "parent": "home.f1.kitchen",
+      "source_line": "抽屉：筷子、勺子、刀具、砧板",
+      "container_id": "home.f1.kitchen.object.3bf97e926567",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.6692ad3a4cd6": {
+      "name": "砧板",
+      "parent": "home.f1.kitchen",
+      "source_line": "抽屉：筷子、勺子、刀具、砧板",
+      "container_id": "home.f1.kitchen.object.3bf97e926567",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.701c0bc46a74": {
+      "name": "调料收纳",
+      "parent": "home.f1.kitchen",
+      "source_line": "调料收纳：油、盐及常用调料",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "group"
+    },
+    "home.f1.kitchen.object.d07cd4b0a23b": {
+      "name": "油",
+      "parent": "home.f1.kitchen",
+      "source_line": "调料收纳：油、盐及常用调料",
+      "container_id": "home.f1.kitchen.object.701c0bc46a74",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.68a3b8145b39": {
+      "name": "盐及常用调料",
+      "parent": "home.f1.kitchen",
+      "source_line": "调料收纳：油、盐及常用调料",
+      "container_id": "home.f1.kitchen.object.701c0bc46a74",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.b163da16a6c7": {
+      "name": "清洁用品",
+      "parent": "home.f1.kitchen",
+      "source_line": "清洁用品：洗洁精、海绵、抹布",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "group"
+    },
+    "home.f1.kitchen.object.edf001fccd46": {
+      "name": "洗洁精",
+      "parent": "home.f1.kitchen",
+      "source_line": "清洁用品：洗洁精、海绵、抹布",
+      "container_id": "home.f1.kitchen.object.b163da16a6c7",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.88b84527b377": {
+      "name": "海绵",
+      "parent": "home.f1.kitchen",
+      "source_line": "清洁用品：洗洁精、海绵、抹布",
+      "container_id": "home.f1.kitchen.object.b163da16a6c7",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.bf10f001e1f6": {
+      "name": "抹布",
+      "parent": "home.f1.kitchen",
+      "source_line": "清洁用品：洗洁精、海绵、抹布",
+      "container_id": "home.f1.kitchen.object.b163da16a6c7",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.kitchen.object.d7b7407bf306": {
+      "name": "垃圾桶",
+      "parent": "home.f1.kitchen",
+      "source_line": "垃圾桶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.dining.object.dad8cc7cba89": {
+      "name": "餐桌",
+      "parent": "home.f1.dining",
+      "source_line": "餐桌",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.dining.object.4b4104aaf06a": {
+      "name": "餐椅",
+      "parent": "home.f1.dining",
+      "source_line": "餐椅",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.bathroom.object.3bc965eb3e76": {
+      "name": "马桶",
+      "parent": "home.f1.bathroom",
+      "source_line": "马桶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.bathroom.object.c32afbec5f3c": {
+      "name": "洗手台",
+      "parent": "home.f1.bathroom",
+      "source_line": "洗手台、水龙头、镜子",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.bathroom.object.81ecf135e563": {
+      "name": "水龙头",
+      "parent": "home.f1.bathroom",
+      "source_line": "洗手台、水龙头、镜子",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.bathroom.object.e1a4f5479f90": {
+      "name": "镜子",
+      "parent": "home.f1.bathroom",
+      "source_line": "洗手台、水龙头、镜子",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.bathroom.object.a7e134024988": {
+      "name": "洗手液",
+      "parent": "home.f1.bathroom",
+      "source_line": "洗手液、擦手巾、卫生纸",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.bathroom.object.c371c4663dfd": {
+      "name": "擦手巾",
+      "parent": "home.f1.bathroom",
+      "source_line": "洗手液、擦手巾、卫生纸",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.bathroom.object.8dcd6fc3ee02": {
+      "name": "卫生纸",
+      "parent": "home.f1.bathroom",
+      "source_line": "洗手液、擦手巾、卫生纸",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.bathroom.object.d7b7407bf306": {
+      "name": "垃圾桶",
+      "parent": "home.f1.bathroom",
+      "source_line": "垃圾桶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.balcony.object.a12e1966f495": {
+      "name": "休闲椅",
+      "parent": "home.f1.balcony",
+      "source_line": "休闲椅",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.balcony.object.b43cac947b7f": {
+      "name": "小圆桌",
+      "parent": "home.f1.balcony",
+      "source_line": "小圆桌",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.balcony.object.8fa4088e982d": {
+      "name": "盆栽",
+      "parent": "home.f1.balcony",
+      "source_line": "盆栽",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.balcony.object.d3856aa33a42": {
+      "name": "晾衣杆",
+      "parent": "home.f1.balcony",
+      "source_line": "晾衣杆",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f1.balcony.object.361e5aadf834": {
+      "name": "浇水壶",
+      "parent": "home.f1.balcony",
+      "source_line": "浇水壶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bedroom.object.fea9265304cb": {
+      "name": "双人床",
+      "parent": "home.f2.bedroom",
+      "source_line": "双人床：床垫、枕头、被褥",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f2.bedroom.object.c7593c78ac49": {
+      "name": "床垫",
+      "parent": "home.f2.bedroom",
+      "source_line": "双人床：床垫、枕头、被褥",
+      "container_id": "home.f2.bedroom.object.fea9265304cb",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bedroom.object.84fc114618ec": {
+      "name": "枕头",
+      "parent": "home.f2.bedroom",
+      "source_line": "双人床：床垫、枕头、被褥",
+      "container_id": "home.f2.bedroom.object.fea9265304cb",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bedroom.object.6866a758e938": {
+      "name": "被褥",
+      "parent": "home.f2.bedroom",
+      "source_line": "双人床：床垫、枕头、被褥",
+      "container_id": "home.f2.bedroom.object.fea9265304cb",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bedroom.object.c0b9e963ee69": {
+      "name": "床头柜",
+      "parent": "home.f2.bedroom",
+      "source_line": "床头柜、床头灯",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bedroom.object.a5c1c0e620ee": {
+      "name": "床头灯",
+      "parent": "home.f2.bedroom",
+      "source_line": "床头柜、床头灯",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bedroom.object.34416c542d5e": {
+      "name": "落地窗",
+      "parent": "home.f2.bedroom",
+      "source_line": "落地窗、窗帘",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bedroom.object.12bf47489e73": {
+      "name": "窗帘",
+      "parent": "home.f2.bedroom",
+      "source_line": "落地窗、窗帘",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bedroom.object.18fbfc5cccb6": {
+      "name": "个人物品",
+      "parent": "home.f2.bedroom",
+      "source_line": "个人物品：小熊公仔",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "group"
+    },
+    "home.f2.bedroom.object.ddcddacee7ca": {
+      "name": "小熊公仔",
+      "parent": "home.f2.bedroom",
+      "source_line": "个人物品：小熊公仔",
+      "container_id": "home.f2.bedroom.object.18fbfc5cccb6",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "owner": "user",
+      "background": {
+        "provenance": "user_provided_setting",
+        "origin": "左然送给用户的生日礼物",
+        "interaction": "触碰右手开关播放预先录入的声音",
+        "known_recording": "左然录制的摇篮曲",
+        "unknown": [
+          "赠送日期",
+          "具体生日场景",
+          "完整录音列表",
+          "曲名",
+          "录音内容"
+        ],
+        "boundary": "播放录音不是左然现场唱歌，不生成台词"
+      }
+    },
+    "home.f2.vanity.object.aeec1401a11e": {
+      "name": "梳妆台",
+      "parent": "home.f2.vanity",
+      "source_line": "梳妆台、镜子、座椅",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.vanity.object.e1a4f5479f90": {
+      "name": "镜子",
+      "parent": "home.f2.vanity",
+      "source_line": "梳妆台、镜子、座椅",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.vanity.object.5a9fd33c7fa8": {
+      "name": "座椅",
+      "parent": "home.f2.vanity",
+      "source_line": "梳妆台、镜子、座椅",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.vanity.object.fd5d96b3d730": {
+      "name": "梳子",
+      "parent": "home.f2.vanity",
+      "source_line": "梳子、日常护肤品、化妆品",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.vanity.object.5d78ae211ec0": {
+      "name": "日常护肤品",
+      "parent": "home.f2.vanity",
+      "source_line": "梳子、日常护肤品、化妆品",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.vanity.object.e87c6679d235": {
+      "name": "化妆品",
+      "parent": "home.f2.vanity",
+      "source_line": "梳子、日常护肤品、化妆品",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.vanity.object.3bf97e926567": {
+      "name": "抽屉",
+      "parent": "home.f2.vanity",
+      "source_line": "抽屉：首饰、发饰",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f2.vanity.object.3b91c1d91db2": {
+      "name": "首饰",
+      "parent": "home.f2.vanity",
+      "source_line": "抽屉：首饰、发饰",
+      "container_id": "home.f2.vanity.object.3bf97e926567",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.vanity.object.bd96d06cc43d": {
+      "name": "发饰",
+      "parent": "home.f2.vanity",
+      "source_line": "抽屉：首饰、发饰",
+      "container_id": "home.f2.vanity.object.3bf97e926567",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.vanity.object.54906cb0a597": {
+      "name": "纪念物品",
+      "parent": "home.f2.vanity",
+      "source_line": "纪念物品：大雁戒托、红豆项链（详见纪念信息）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "group"
+    },
+    "home.f2.vanity.object.d2e9ce7efc13": {
+      "name": "大雁戒托",
+      "parent": "home.f2.vanity",
+      "source_line": "纪念物品：大雁戒托、红豆项链（详见纪念信息）",
+      "container_id": "home.f2.vanity.object.54906cb0a597",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "background": {
+        "provenance": "user_provided_setting",
+        "purpose": "用于放置用户与左然的婚戒",
+        "relationship": "婚姻关系",
+        "current_contents": null,
+        "unknown": [
+          "购买或赠送经过",
+          "婚礼日期"
+        ],
+        "boundary": "不表示婚戒当前在戒托上"
+      }
+    },
+    "home.f2.vanity.object.bcf22ea7018a": {
+      "name": "红豆项链",
+      "parent": "home.f2.vanity",
+      "source_line": "纪念物品：大雁戒托、红豆项链（详见纪念信息）",
+      "container_id": "home.f2.vanity.object.54906cb0a597",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "owner": "user",
+      "worn": null,
+      "background": {
+        "provenance": "user_provided_setting",
+        "origin": "左然告白时送给用户的礼物",
+        "associated_poem": "玲珑骰子安红豆，入骨相思知不知",
+        "unknown": [
+          "告白日期",
+          "地点",
+          "完整对话",
+          "项链具体造型"
+        ],
+        "boundary": "诗句不等于刻字或当时逐字台词"
+      }
+    },
+    "home.f2.media.object.961085f3c7ef": {
+      "name": "沙发",
+      "parent": "home.f2.media",
+      "source_line": "沙发",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.media.object.6b35f0323d38": {
+      "name": "投影仪",
+      "parent": "home.f2.media",
+      "source_line": "投影仪、遥控器",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.media.object.33d3ef284743": {
+      "name": "遥控器",
+      "parent": "home.f2.media",
+      "source_line": "投影仪、遥控器",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.dressing.object.dc13d2485c49": {
+      "name": "衣柜",
+      "parent": "home.f2.dressing",
+      "source_line": "衣柜：左然衣物、用户衣物",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f2.dressing.object.3bc8fe6fc3df": {
+      "name": "左然衣物",
+      "parent": "home.f2.dressing",
+      "source_line": "衣柜：左然衣物、用户衣物",
+      "container_id": "home.f2.dressing.object.dc13d2485c49",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.dressing.object.cd19fac4da3e": {
+      "name": "用户衣物",
+      "parent": "home.f2.dressing",
+      "source_line": "衣柜：左然衣物、用户衣物",
+      "container_id": "home.f2.dressing.object.dc13d2485c49",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.dressing.object.a513f59fa3cf": {
+      "name": "衣架",
+      "parent": "home.f2.dressing",
+      "source_line": "衣架、衣物抽屉",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.dressing.object.294fb5fbdd26": {
+      "name": "衣物抽屉",
+      "parent": "home.f2.dressing",
+      "source_line": "衣架、衣物抽屉",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.dressing.object.1e637ec97f90": {
+      "name": "全身镜",
+      "parent": "home.f2.dressing",
+      "source_line": "全身镜",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.dressing.object.6aa41c004953": {
+      "name": "挂烫机",
+      "parent": "home.f2.dressing",
+      "source_line": "挂烫机",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.3bc965eb3e76": {
+      "name": "马桶",
+      "parent": "home.f2.bathroom",
+      "source_line": "马桶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.c32afbec5f3c": {
+      "name": "洗手台",
+      "parent": "home.f2.bathroom",
+      "source_line": "洗手台、镜柜",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.c996467dd7e1": {
+      "name": "镜柜",
+      "parent": "home.f2.bathroom",
+      "source_line": "洗手台、镜柜",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.1ba09d1754d1": {
+      "name": "淋浴区",
+      "parent": "home.f2.bathroom",
+      "source_line": "淋浴区",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.a42969c173ea": {
+      "name": "浴缸",
+      "parent": "home.f2.bathroom",
+      "source_line": "浴缸（当前布局草案中保留）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.126a3fb1f28f": {
+      "name": "毛巾架",
+      "parent": "home.f2.bathroom",
+      "source_line": "毛巾架：毛巾、浴巾",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f2.bathroom.object.c471aae1a90d": {
+      "name": "毛巾",
+      "parent": "home.f2.bathroom",
+      "source_line": "毛巾架：毛巾、浴巾",
+      "container_id": "home.f2.bathroom.object.126a3fb1f28f",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.d2e8afcd6b0d": {
+      "name": "浴巾",
+      "parent": "home.f2.bathroom",
+      "source_line": "毛巾架：毛巾、浴巾",
+      "container_id": "home.f2.bathroom.object.126a3fb1f28f",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.aeb4c474be56": {
+      "name": "牙刷",
+      "parent": "home.f2.bathroom",
+      "source_line": "牙刷、牙膏、洗发水、沐浴露",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.31789e1528f8": {
+      "name": "牙膏",
+      "parent": "home.f2.bathroom",
+      "source_line": "牙刷、牙膏、洗发水、沐浴露",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.7d3019679d09": {
+      "name": "洗发水",
+      "parent": "home.f2.bathroom",
+      "source_line": "牙刷、牙膏、洗发水、沐浴露",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.e8df78b63347": {
+      "name": "沐浴露",
+      "parent": "home.f2.bathroom",
+      "source_line": "牙刷、牙膏、洗发水、沐浴露",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.9cd8dac6a84d": {
+      "name": "吹风机",
+      "parent": "home.f2.bathroom",
+      "source_line": "吹风机",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.6acfa1db6a62": {
+      "name": "洗衣机",
+      "parent": "home.f2.bathroom",
+      "source_line": "洗衣机、烘干机（新增摆放建议，需核对空间）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.972ddf82a152": {
+      "name": "烘干机",
+      "parent": "home.f2.bathroom",
+      "source_line": "洗衣机、烘干机（新增摆放建议，需核对空间）",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.8dcd6fc3ee02": {
+      "name": "卫生纸",
+      "parent": "home.f2.bathroom",
+      "source_line": "卫生纸、清洁用品、垃圾桶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.b163da16a6c7": {
+      "name": "清洁用品",
+      "parent": "home.f2.bathroom",
+      "source_line": "卫生纸、清洁用品、垃圾桶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.bathroom.object.d7b7407bf306": {
+      "name": "垃圾桶",
+      "parent": "home.f2.bathroom",
+      "source_line": "卫生纸、清洁用品、垃圾桶",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.3a377d4d385e": {
+      "name": "书桌",
+      "parent": "home.f2.study",
+      "source_line": "书桌、工作椅、台灯",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.bd35589d5c57": {
+      "name": "工作椅",
+      "parent": "home.f2.study",
+      "source_line": "书桌、工作椅、台灯",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.c16356377863": {
+      "name": "台灯",
+      "parent": "home.f2.study",
+      "source_line": "书桌、工作椅、台灯",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.d48f1dcf88d2": {
+      "name": "电脑",
+      "parent": "home.f2.study",
+      "source_line": "电脑、键盘、鼠标",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.864200bbb241": {
+      "name": "键盘",
+      "parent": "home.f2.study",
+      "source_line": "电脑、键盘、鼠标",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.f93ba1b7e928": {
+      "name": "鼠标",
+      "parent": "home.f2.study",
+      "source_line": "电脑、键盘、鼠标",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.da2c2d29f9ab": {
+      "name": "书架",
+      "parent": "home.f2.study",
+      "source_line": "书架：书籍",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f2.study.object.1ee4e22b2e6e": {
+      "name": "书籍",
+      "parent": "home.f2.study",
+      "source_line": "书架：书籍",
+      "container_id": "home.f2.study.object.da2c2d29f9ab",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "collection",
+      "content": null,
+      "progress": null
+    },
+    "home.f2.study.object.dc665099efdc": {
+      "name": "文件柜",
+      "parent": "home.f2.study",
+      "source_line": "文件柜：工作资料、家庭文件",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "fixture"
+    },
+    "home.f2.study.object.f7f9a9d82366": {
+      "name": "工作资料",
+      "parent": "home.f2.study",
+      "source_line": "文件柜：工作资料、家庭文件",
+      "container_id": "home.f2.study.object.dc665099efdc",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "collection",
+      "content": null,
+      "progress": null
+    },
+    "home.f2.study.object.c548b2a91a8a": {
+      "name": "家庭文件",
+      "parent": "home.f2.study",
+      "source_line": "文件柜：工作资料、家庭文件",
+      "container_id": "home.f2.study.object.dc665099efdc",
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "kind": "collection",
+      "content": null,
+      "progress": null
+    },
+    "home.f2.study.object.155c2f5d0a3b": {
+      "name": "笔记本",
+      "parent": "home.f2.study",
+      "source_line": "笔记本、笔",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.3afda9c1bd32": {
+      "name": "笔",
+      "parent": "home.f2.study",
+      "source_line": "笔记本、笔",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.17cb97521322": {
+      "name": "插座",
+      "parent": "home.f2.study",
+      "source_line": "插座、充电器",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.f2.study.object.bc71dcc29c79": {
+      "name": "充电器",
+      "parent": "home.f2.study",
+      "source_line": "插座、充电器",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.stairs.object.6f3e6b30bc72": {
+      "name": "扶手",
+      "parent": "home.stairs",
+      "source_line": "扶手",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.stairs.object.098294eeccc2": {
+      "name": "照明",
+      "parent": "home.stairs",
+      "source_line": "照明",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      }
+    },
+    "home.object.46664c094765": {
+      "name": "左然的婚戒",
+      "parent": "home",
+      "source_line": "纪念物品背景：两人的婚戒；当前佩戴或存放状态未知",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "owner": "zuoran",
+      "location_status": "unknown; parent is catalog scope only",
+      "worn": null
+    },
+    "home.object.b7a5e9ddd877": {
+      "name": "用户的婚戒",
+      "parent": "home",
+      "source_line": "纪念物品背景：两人的婚戒；当前佩戴或存放状态未知",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "owner": "user",
+      "location_status": "unknown; parent is catalog scope only",
+      "worn": null
+    },
+    "home.object.2e07333c8c74": {
+      "name": "手机",
+      "parent": "home",
+      "source_line": "家庭网络连接规则：手机保存家庭网络并开启自动连接",
+      "container_id": null,
+      "quantity": null,
+      "dynamic_state": {
+        "power": null,
+        "cleanliness": null,
+        "in_use": null
+      },
+      "location_status": "unknown; parent is catalog scope only",
+      "owner": null,
+      "network_preferences": {
+        "saved_ssid": "律狮的专属频道",
+        "auto_connect": true
+      },
+      "current_connection": null
+    }
+  },
+  "edges": [
+    [
+      "home.f1.entry",
+      "home.f1"
+    ],
+    [
+      "home.f1.living",
+      "home.f1"
+    ],
+    [
+      "home.f1.kitchen",
+      "home.f1"
+    ],
+    [
+      "home.f1.dining",
+      "home.f1"
+    ],
+    [
+      "home.f1.bathroom",
+      "home.f1"
+    ],
+    [
+      "home.f2.bedroom",
+      "home.f2"
+    ],
+    [
+      "home.f2.media",
+      "home.f2"
+    ],
+    [
+      "home.f2.dressing",
+      "home.f2"
+    ],
+    [
+      "home.f2.bathroom",
+      "home.f2"
+    ],
+    [
+      "home.f2.study",
+      "home.f2"
+    ],
+    [
+      "home.f1.living",
+      "home.f1.balcony"
+    ],
+    [
+      "home.f2.bedroom",
+      "home.f2.vanity"
+    ],
+    [
+      "home.f1",
+      "home.stairs"
+    ],
+    [
+      "home.stairs",
+      "home.f2"
+    ]
+  ],
+  "boundary": "Configuration only; unknown quantities, device states and contents are not fabricated. No events or memories are generated."
+}

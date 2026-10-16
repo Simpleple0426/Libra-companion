@@ -1,0 +1,3 @@
+[submodule "backend/vendor/co-reading-kit"]
+	path = backend/vendor/co-reading-kit
+	url = https://github.com/Youxuuuuu/co-reading-kit.git

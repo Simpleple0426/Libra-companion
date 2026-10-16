@@ -1,0 +1,19 @@
+{
+  "version": "p2-isolated-v1",
+  "source": "test_fixture",
+  "reflection_threshold": 8,
+  "retrieval_count": 8,
+  "recency_decay_per_hour": 0.995,
+  "retrieval_weights": {
+    "recency": 1,
+    "importance": 1,
+    "relevance": 1
+  },
+  "embedding": "lexical_bigram_cosine_test_adapter",
+  "plan_horizon_seconds": 14400,
+  "near_window_seconds": 900,
+  "reading_chunk_chars": 24,
+  "commitments": [],
+  "commitments_source": "test_fixture_empty_not_production_fact",
+  "production_commitments": null
+}

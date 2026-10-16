@@ -1,0 +1,51 @@
+{
+  "type": "object",
+  "required": [
+    "need_updates"
+  ],
+  "properties": {
+    "need_updates": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "need",
+          "direction",
+          "strength"
+        ],
+        "properties": {
+          "need": {
+            "type": "string",
+            "enum": [
+              "connection",
+              "closeness",
+              "reassurance",
+              "care",
+              "expression",
+              "autonomy"
+            ]
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "increase",
+              "decrease",
+              "neutral"
+            ]
+          },
+          "strength": {
+            "type": "string",
+            "enum": [
+              "weak",
+              "medium",
+              "strong"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
