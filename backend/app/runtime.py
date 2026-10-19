@@ -436,7 +436,7 @@ validate_database_shards()
 active_cognitive_turn = ContextVar('active_cognitive_turn', default=None)
 active_business_trigger = ContextVar('active_business_trigger', default=None)
 chat_turn_lock = threading.Lock()
-from infrastructure.sqlite.chat_session_state import ChatSessionState
+from infrastructure.sqlite.chat_session_state import ChatSessionState, weekly_session_key
 chat_session_state = ChatSessionState(memory_store.connect)
 
 current_thread_id = chat_session_state.restore_shared(get_latest_thread(MODEL_PROVIDER))
@@ -446,6 +446,31 @@ pending_chat_image: Path | None = None
 from application.model_lane import ModelLane
 codex_lock = ModelLane()
 life_model_lock = ModelLane()
+
+
+def _main_thread_week(now: datetime | None = None) -> str:
+    """Monday-based week at the 04:00 Asia/Shanghai life-day boundary."""
+    return weekly_session_key(now)
+
+
+def _rotate_main_thread_for_week() -> tuple[bool, str]:
+    """Prepare a fresh shared session on the first model call of a new week."""
+    global current_thread_id
+    week_key = _main_thread_week()
+    if not chat_session_state.weekly_rotation_due(week_key):
+        return False, week_key
+    previous = current_thread_id
+    chat_session_state.request_fresh(
+        previous,
+        json.dumps({
+            "reason": "weekly_rotation",
+            "previous_thread_id": previous,
+            "week": week_key,
+            "rotated_at": datetime.now(timezone(timedelta(hours=8))).isoformat(),
+        }, ensure_ascii=False),
+    )
+    current_thread_id = None
+    return True, week_key
 
 
 def _open_local_life_engine(run_id: str):
@@ -2643,6 +2668,7 @@ def _run_codex(
         )
     with codex_lock:
         # Read and persist the pointer under the same lock as the CLI invocation.
+        _, active_week = _rotate_main_thread_for_week() if persist_thread else (False, _main_thread_week())
         if start_new and persist_thread and current_thread_id:
             raise RuntimeError("已有主聊天线程；本次操作不能自动换号")
         resume_session_id = current_thread_id if persist_thread else None
@@ -2711,6 +2737,7 @@ def _run_codex(
             # Persist its dedicated key before updating the historical thread list.
             current_thread_id = selected_id
             chat_session_state.remember(selected_id)
+            chat_session_state.mark_week(active_week)
             save_thread(selected_id, MODEL_PROVIDER)
             if resume_session_id is None:
                 set_app_setting(
