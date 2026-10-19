@@ -3,6 +3,10 @@ CREATE TABLE IF NOT EXISTS cognition_turns (
  status TEXT NOT NULL, context_json TEXT NOT NULL, plan_json TEXT NOT NULL,
  response_json TEXT, verdict_json TEXT, created_at TEXT NOT NULL, committed_at TEXT
 );
+CREATE INDEX IF NOT EXISTS idx_cognition_turns_created
+ ON cognition_turns(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_cognition_turns_status_created
+ ON cognition_turns(status, created_at DESC);
 CREATE TABLE IF NOT EXISTS cognition_context_revisions (
  turn_id TEXT NOT NULL REFERENCES cognition_turns(turn_id), revision INTEGER NOT NULL,
  snapshot_json TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(turn_id,revision)
