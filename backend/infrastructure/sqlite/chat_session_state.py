@@ -35,6 +35,12 @@ class ChatSessionState:
     def restore_shared(self, fallback=None):
         """Recover the shared pointer, including an unfinished legacy rotation."""
         with self.connect(True) as connection:
+            invalid = connection.execute(
+                "SELECT value FROM memory_config WHERE key='invalid_main_thread'"
+            ).fetchone()
+            if invalid:
+                connection.execute("DELETE FROM memory_config WHERE key='main_thread_id'")
+                return None
             session_id = current_session(connection)
             if not session_id:
                 previous = connection.execute(
@@ -49,6 +55,7 @@ class ChatSessionState:
                     "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (session_id,)
                 )
             connection.execute("DELETE FROM memory_config WHERE key='start_fresh_thread'")
+            connection.execute("DELETE FROM memory_config WHERE key='invalid_main_thread'")
             return session_id
 
     def fresh_requested(self):
@@ -67,6 +74,7 @@ class ChatSessionState:
                 "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (session_id,)
             )
             connection.execute("DELETE FROM memory_config WHERE key='start_fresh_thread'")
+            connection.execute("DELETE FROM memory_config WHERE key='invalid_main_thread'")
 
     def weekly_rotation_due(self, week_key):
         """Return whether the shared session belongs to an earlier Libra week.
@@ -102,5 +110,19 @@ class ChatSessionState:
                 connection.execute(
                     "INSERT INTO memory_config VALUES (?,?) "
                     "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (key, value)
+                )
+            connection.execute("DELETE FROM memory_config WHERE key='main_thread_id'")
+
+    def invalidate(self, previous, reason):
+        """Discard a provider pointer that can no longer be resumed locally."""
+        with self.connect(True) as connection:
+            for key, value in (
+                ('previous_main_thread_id', previous or ''),
+                ('invalid_main_thread', reason),
+            ):
+                connection.execute(
+                    "INSERT INTO memory_config VALUES (?,?) "
+                    "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+                    (key, value),
                 )
             connection.execute("DELETE FROM memory_config WHERE key='main_thread_id'")

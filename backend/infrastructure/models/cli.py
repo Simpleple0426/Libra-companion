@@ -11,6 +11,7 @@ import threading
 import time
 from collections import deque
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
 
@@ -33,6 +34,18 @@ def provider_name() -> str:
 
 def model_name() -> str:
     return os.environ.get("LIBRA_LLM_MODEL", "").strip()
+
+
+@lru_cache(maxsize=32)
+def codex_session_available(session_id: str | None) -> bool:
+    """Check that a persisted Codex pointer still has a local rollout file."""
+    if not session_id:
+        return False
+    configured = os.environ.get("LIBRA_CODEX_HOME", "").strip()
+    root = (Path(configured).expanduser() if configured else Path.home() / '.codex') / 'sessions'
+    if not root.exists():
+        return False
+    return next(root.rglob(f'*{session_id}*.jsonl'), None) is not None
 
 
 def _resolve_command(provider: str) -> str:

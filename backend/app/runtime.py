@@ -165,7 +165,7 @@ from domains.persona.character_corpus import CharacterCorpusStore, format_eviden
 from domains.persona.canonical_history import CanonicalHistoryStore
 from domains.persona.shared_history import SharedHistoryStore
 from application.knowledge_retriever import KnowledgeRetriever
-from infrastructure.models.cli import provider_name, run_cli
+from infrastructure.models.cli import codex_session_available, provider_name, run_cli
 from domains.memory.store import MemoryStore
 from infrastructure.embeddings.local import get_local_embedding_adapter
 from domains.memory.store import uid as memory_uid
@@ -471,6 +471,25 @@ def _rotate_main_thread_for_week() -> tuple[bool, str]:
     )
     current_thread_id = None
     return True, week_key
+
+
+def _rotate_unavailable_main_thread() -> bool:
+    """Drop a Codex pointer whose rollout file is missing on this host."""
+    global current_thread_id
+    if (MODEL_PROVIDER != 'codex' or not current_thread_id
+            or codex_session_available(current_thread_id)):
+        return False
+    previous = current_thread_id
+    chat_session_state.invalidate(previous, 'missing_codex_rollout')
+    current_thread_id = None
+    print(f'[libra] rotated unavailable Codex thread: {previous}', flush=True)
+    return True
+
+
+def _is_unresumable_codex_error(error: Exception) -> bool:
+    text = str(error).lower()
+    return ('thread/resume' in text and
+            ('failed to resolve rollout path' in text or 'file does not exist' in text))
 
 
 def _open_local_life_engine(run_id: str):
@@ -2668,6 +2687,8 @@ def _run_codex(
         )
     with codex_lock:
         # Read and persist the pointer under the same lock as the CLI invocation.
+        if persist_thread:
+            _rotate_unavailable_main_thread()
         _, active_week = _rotate_main_thread_for_week() if persist_thread else (False, _main_thread_week())
         if start_new and persist_thread and current_thread_id:
             raise RuntimeError("已有主聊天线程；本次操作不能自动换号")
@@ -2725,8 +2746,24 @@ def _run_codex(
                     _record_llm_usage(result, result.session_id, source + '_empty_generation_retry')
                     raise ValueError('empty_planned_response')
         except Exception as error:
-            turn_pipeline.failure(generation_context, 'generation', type(error).__name__)
-            raise
+            if persist_thread and resume_session_id and _is_unresumable_codex_error(error):
+                stale_session = resume_session_id
+                chat_session_state.invalidate(stale_session, 'unresumable_codex_rollout')
+                current_thread_id = None
+                resume_session_id = None
+                fresh_prompt = new_thread_prompt or prompt
+                if '<persona>' not in fresh_prompt:
+                    fresh_prompt = load_persona_bundle() + '\n\n' + fresh_prompt
+                fresh_prompt += _sticker_instruction()
+                print(f'[libra] retrying failed resume in a fresh thread: {stale_session}', flush=True)
+                try:
+                    result = generate_response(fresh_prompt, None)
+                except Exception as retry_error:
+                    turn_pipeline.failure(generation_context, 'generation', type(retry_error).__name__)
+                    raise
+            else:
+                turn_pipeline.failure(generation_context, 'generation', type(error).__name__)
+                raise
         if persist_thread:
             if resume_session_id and result.session_id not in {None, resume_session_id}:
                 raise RuntimeError("模型返回了不同线程号；原主线程已保留，请重试恢复")

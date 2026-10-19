@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parents[1]))
 
 from application.turn_pipeline import compact_context, stored_context_json
-from infrastructure.models.cli import _parse_codex
+from infrastructure.models.cli import _parse_codex, codex_session_available
 
 
 def test_large_prompt_is_replaced_by_metadata():
@@ -53,3 +53,14 @@ def test_reasoning_tokens_may_exceed_visible_output():
         'total_tokens': 20_800,
     }})
     assert _parse_codex(stdout, None).usage['reasoning_output_tokens'] == 1_200
+
+
+def test_missing_codex_rollout_is_detected(tmp_path, monkeypatch):
+    monkeypatch.setenv('LIBRA_CODEX_HOME', str(tmp_path))
+    codex_session_available.cache_clear()
+    assert not codex_session_available('missing')
+    rollout = tmp_path / 'sessions' / '2026' / '10' / '19' / 'rollout-thread-id.jsonl'
+    rollout.parent.mkdir(parents=True)
+    rollout.write_text('{}', encoding='utf-8')
+    codex_session_available.cache_clear()
+    assert codex_session_available('thread-id')

@@ -46,6 +46,12 @@ class WeeklyChatRotationTests(unittest.TestCase):
         self.assertFalse(self.state.weekly_rotation_due("2026-10-19"))
         self.assertEqual(self.state.current(), "new-thread")
 
+    def test_invalid_session_is_not_restored_after_restart(self):
+        self.state.invalidate('old-thread', 'missing_codex_rollout')
+        self.assertIsNone(self.state.restore_shared('fallback-thread'))
+        self.state.remember('replacement-thread')
+        self.assertEqual(self.state.restore_shared(), 'replacement-thread')
+
 
 class WeekBoundaryTests(unittest.TestCase):
     def test_monday_before_four_belongs_to_previous_week(self):

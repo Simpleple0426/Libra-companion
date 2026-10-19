@@ -107,6 +107,9 @@ def deliver_one(connect, generate, push, now=None):
     now = local_time(now)
     with connect() as c:
         initialize(c)
+        # Routed production connections reserve a write transaction for DDL.
+        # Close that setup transaction before acquiring the delivery lease.
+        c.commit()
         c.execute('BEGIN IMMEDIATE')
         row = c.execute('''SELECT t.title,t.done,r.* FROM todo_reminders r JOIN todos t USING(local_id)
             WHERE t.done=0 AND r.deleted=0 AND r.delivered_at IS NULL AND r.remind_at<=?
@@ -125,6 +128,9 @@ def deliver_one(connect, generate, push, now=None):
     except Exception:
         text = fallback
     with connect() as c:
+        # The second connection may also perform lazy schema setup elsewhere;
+        # always start the delivery commit from a clean transaction boundary.
+        c.commit()
         c.execute('BEGIN IMMEDIATE')
         current = c.execute('''SELECT r.*,t.done FROM todo_reminders r JOIN todos t USING(local_id)
             WHERE r.local_id=?''', (item['local_id'],)).fetchone()
