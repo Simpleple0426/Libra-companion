@@ -436,6 +436,8 @@ validate_database_shards()
 active_cognitive_turn = ContextVar('active_cognitive_turn', default=None)
 active_business_trigger = ContextVar('active_business_trigger', default=None)
 chat_turn_lock = threading.Lock()
+chat_retry_lock = threading.Lock()
+chat_retry_state: dict[str, dict] = {}
 from infrastructure.sqlite.chat_session_state import ChatSessionState, weekly_session_key
 chat_session_state = ChatSessionState(memory_store.connect)
 
@@ -6285,9 +6287,75 @@ def chat_status(request_id: str | None = None):
         if receipt:
             accepted = True
             replies = json.loads(receipt['replies']) if receipt['replies'] is not None else []
-    return {'success': True, 'pending': chat_turn_lock.locked() or music_room_chat.lock.locked(),
+    retry = None
+    if request_id:
+        with chat_retry_lock:
+            retry = dict(chat_retry_state.get(request_id) or {})
+    return {'success': True,
+            'pending': chat_turn_lock.locked() or music_room_chat.lock.locked()
+                       or retry.get('status') in {'pending', 'running'},
             'accepted': accepted,
-            'reply_messages': replies}
+            'reply_messages': replies,
+            **({'retry': retry} if retry else {})}
+
+
+def _is_rate_limit_error(error: Exception) -> bool:
+    value = str(error).lower()
+    return '429' in value or 'too many requests' in value or 'rate limit' in value
+
+
+def _schedule_chat_retry(request: ChatRequest, message_id: int | None, message_source: str) -> bool:
+    """Retry a persisted foreground message after transient provider throttling."""
+    if not request.request_id or message_id is None:
+        return False
+    delays = (30, 90, 180, 300)
+    with chat_retry_lock:
+        previous = chat_retry_state.get(request.request_id) or {}
+        if previous.get('status') == 'pending':
+            return True
+        attempt = int(previous.get('attempt', 0)) + 1
+        if attempt > len(delays):
+            chat_retry_state[request.request_id] = {
+                'status': 'failed', 'attempt': attempt - 1,
+                'error': 'model_rate_limited',
+            }
+            return False
+        delay = delays[attempt - 1]
+        retry_at = (datetime.now() + timedelta(seconds=delay)).isoformat()
+        chat_retry_state[request.request_id] = {
+            'status': 'pending', 'attempt': attempt,
+            'retry_at': retry_at, 'error': 'model_rate_limited',
+        }
+
+    def run() -> None:
+        with chat_retry_lock:
+            state = chat_retry_state.get(request.request_id)
+            if not state or state.get('attempt') != attempt:
+                return
+            state['status'] = 'running'
+        try:
+            result = _chat_impl(
+                request,
+                save_user_message=False,
+                original_message_id=message_id,
+                message_source=message_source,
+            )
+            if result.get('success'):
+                with chat_retry_lock:
+                    chat_retry_state.pop(request.request_id, None)
+        except Exception as retry_error:
+            with chat_retry_lock:
+                state = chat_retry_state.get(request.request_id)
+                if state and state.get('attempt') == attempt:
+                    state.update(status='failed', error=type(retry_error).__name__)
+            print(f"[libra] delayed chat retry failed: {retry_error}", flush=True)
+
+    timer = threading.Timer(delay, run)
+    timer.daemon = True
+    timer.name = f'libra-chat-retry-{attempt}'
+    timer.start()
+    print(f"[libra] chat retry scheduled request_id={request.request_id} attempt={attempt} delay={delay}s", flush=True)
+    return True
 
 
 def _chat_impl(
@@ -6597,7 +6665,10 @@ def _chat_turn(
             raise RuntimeError('Response returned a retired tool query marker')
     except RuntimeError as error:
         print(f"[libra] chat failed: {error}", flush=True)
-        return {"success": False, "error": str(error)}
+        retry_scheduled = _is_rate_limit_error(error) and _schedule_chat_retry(
+            request, saved_user_message_id, message_source)
+        return {"success": False, "error": str(error),
+                "retry_scheduled": retry_scheduled}
 
     if replies:
         replies = PlannedReplies(replies, cognitive_context, action_payload)
@@ -6625,6 +6696,10 @@ def _chat_turn(
             "thread_id": thread_id,
             "turn_id": cognitive_context['turn_id'],
         }
+
+    if request.request_id:
+        with chat_retry_lock:
+            chat_retry_state.pop(request.request_id, None)
 
     return {
         "success": True,
