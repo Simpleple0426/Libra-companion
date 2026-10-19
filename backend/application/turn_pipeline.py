@@ -15,7 +15,43 @@ from domains.memory.store import dumps, utc, uid
 
 TABLES = ('cognition_turns', 'cognition_context_revisions', 'cognition_delivery',
           'cognition_post_jobs', 'cognition_feedback', 'cognition_actions', 'cognition_inputs', 'cognition_notifications', 'cognition_call_inputs')
-CONTEXT_REVISION_LIMIT = 3
+CONTEXT_REVISION_LIMIT = 1
+STORED_FIELD_LIMIT = 8_000
+
+
+def compact_context(context):
+    """Keep operational evidence while omitting duplicated prompt-sized blobs."""
+    result = {}
+    for key, value in context.items():
+        if key == 'response_requests' and isinstance(value, list):
+            requests = []
+            for request in value:
+                if not isinstance(request, dict):
+                    continue
+                prompt = str(request.get('prompt') or '')
+                requests.append({
+                    field: request.get(field) for field in
+                    ('session_id', 'model', 'provider', 'image_paths') if request.get(field) is not None
+                } | {
+                    'prompt_chars': len(prompt),
+                    'prompt_sha256': hashlib.sha256(prompt.encode('utf-8')).hexdigest(),
+                })
+            result[key] = requests
+            continue
+        encoded = dumps(value)
+        if len(encoded) <= STORED_FIELD_LIMIT:
+            result[key] = value
+        else:
+            result[key] = {
+                'storage': 'omitted_large_field',
+                'json_chars': len(encoded),
+                'sha256': hashlib.sha256(encoded.encode('utf-8')).hexdigest(),
+            }
+    return result
+
+
+def stored_context_json(context):
+    return dumps(compact_context(context))
 
 
 class PlannedReplies(list):
@@ -137,7 +173,7 @@ class TurnPipeline:
         try:
             with self.store.connect(True) as c:
                 c.execute("UPDATE cognition_turns SET status=?,context_json=? WHERE turn_id=? AND status!='committed'",
-                          ('failed_' + stage, dumps(context), context['turn_id']))
+                          ('failed_' + stage, stored_context_json(context), context['turn_id']))
         except Exception:
             pass  # Do not mask the original disk/model failure.
 
@@ -237,11 +273,12 @@ class TurnPipeline:
         now = utc()
         with self.store.connect(True) as c:
             c.execute('INSERT OR IGNORE INTO cognition_turns VALUES (?,?,?,?,?,?,NULL,NULL,?,NULL)',
-                      (turn_id, source_key, source, 'planned', dumps(context), dumps(context['response_plan']), now))
+                      (turn_id, source_key, source, 'planned', stored_context_json(context), dumps(context['response_plan']), now))
             row = c.execute('SELECT status FROM cognition_turns WHERE turn_id=?', (turn_id,)).fetchone()
             if row['status'] != 'committed':
-                self._save_context_revision(c, turn_id, dumps(context), now)
-                c.execute("UPDATE cognition_turns SET status='planned',context_json=?,plan_json=? WHERE turn_id=?", (dumps(context), dumps(context['response_plan']), turn_id))
+                stored = stored_context_json(context)
+                self._save_context_revision(c, turn_id, stored, now)
+                c.execute("UPDATE cognition_turns SET status='planned',context_json=?,plan_json=? WHERE turn_id=?", (stored, dumps(context['response_plan']), turn_id))
         return context
 
     def instruction(self, context):
@@ -271,9 +308,10 @@ class TurnPipeline:
             row = c.execute('SELECT status FROM cognition_turns WHERE turn_id=?', (context['turn_id'],)).fetchone()
             if row is None or row[0] == 'committed':
                 return
-            self._save_context_revision(c, context['turn_id'], dumps(context), utc())
+            stored = stored_context_json(context)
+            self._save_context_revision(c, context['turn_id'], stored, utc())
             c.execute('UPDATE cognition_turns SET context_json=?,plan_json=? WHERE turn_id=?',
-                      (dumps(context), dumps(context['response_plan']), context['turn_id']))
+                      (stored, dumps(context['response_plan']), context['turn_id']))
 
     def execute_explicit_actions(self, context):
         from application.tool_decision import execute_explicit_actions
@@ -372,7 +410,7 @@ class TurnPipeline:
             if ids and context['delivery_policy']['proactive']:
                 c.execute('INSERT INTO cognition_notifications VALUES (?,?,?,?,?)', (turn_id, dumps(ids), 'pending', now, now))
             c.execute("UPDATE cognition_turns SET status='committed',context_json=?,plan_json=?,response_json=?,verdict_json=?,committed_at=? WHERE turn_id=?",
-                      (dumps(context), dumps(context['response_plan']), dumps(replies), dumps(verdict), now, turn_id))
+                      (stored_context_json(context), dumps(context['response_plan']), dumps(replies), dumps(verdict), now, turn_id))
             c.execute('INSERT INTO cognition_feedback VALUES (?,?,?,?,?,?)',
                       (uid('eval'), turn_id, 'validation', None, dumps({'accepted_by_delivery_rules': verdict['accepted'],
                        'semantic_validation_performed': bool(verdict.get('final_validation_status')),
@@ -481,7 +519,7 @@ class TurnPipeline:
                 return json.loads(row['response_json'])
             save_call_turn(call_id, 'assistant', result['reply'], result['duration_seconds'], result.get('delivery_note'), connection=c)
             c.execute("UPDATE cognition_turns SET status='committed',context_json=?,response_json=?,verdict_json=?,committed_at=? WHERE turn_id=?",
-                      (dumps(context), dumps(result), dumps(verdict), now, turn_id))
+                      (stored_context_json(context), dumps(result), dumps(verdict), now, turn_id))
             c.execute('INSERT INTO cognition_delivery VALUES (?,?,?,?)', (turn_id, 'call_available', '[]', now))
             c.execute('INSERT INTO cognition_post_jobs(turn_id,created_at) VALUES (?,?)', (turn_id, now))
             c.execute('INSERT INTO cognition_feedback VALUES (?,?,?,?,?,?)',
@@ -499,7 +537,7 @@ class TurnPipeline:
                 return json.loads(row['response_json'])
             result = writer(c)
             c.execute("UPDATE cognition_turns SET status='committed',context_json=?,plan_json=?,response_json=?,verdict_json=?,committed_at=? WHERE turn_id=?",
-                      (dumps(context), dumps(context['response_plan']), dumps(result), dumps(verdict), now, turn_id))
+                      (stored_context_json(context), dumps(context['response_plan']), dumps(result), dumps(verdict), now, turn_id))
             c.execute('INSERT INTO cognition_delivery VALUES (?,?,?,?)', (turn_id, channel + '_available', '[]', now))
             c.execute('INSERT INTO cognition_post_jobs(turn_id,created_at) VALUES (?,?)', (turn_id, now))
             c.execute('INSERT INTO cognition_feedback VALUES (?,?,?,?,?,?)', (uid('eval'), turn_id, 'validation', None,

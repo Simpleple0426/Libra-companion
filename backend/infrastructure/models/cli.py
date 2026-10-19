@@ -141,13 +141,22 @@ def _parse_codex(stdout: str, previous_session_id: str | None) -> CliResult:
                 reply = item.get("text")
         elif event.get("type") == "turn.completed" and isinstance(event.get("usage"), dict):
             raw = event["usage"]
-            usage = {
+            parsed_usage = {
                 "input_tokens": int(raw.get("input_tokens") or 0),
                 "cached_input_tokens": int(raw.get("cached_input_tokens") or 0),
                 "output_tokens": int(raw.get("output_tokens") or 0),
                 "reasoning_output_tokens": int(raw.get("reasoning_output_tokens") or 0),
                 "total_tokens": int(raw.get("total_tokens") or 0),
             }
+            # Ignore impossible provider counters without discarding the reply.
+            max_input = int(os.environ.get("LIBRA_MAX_RECORDED_INPUT_TOKENS", "2000000"))
+            max_output = int(os.environ.get("LIBRA_MAX_RECORDED_OUTPUT_TOKENS", "200000"))
+            if (0 <= parsed_usage["input_tokens"] <= max_input
+                    and 0 <= parsed_usage["cached_input_tokens"] <= parsed_usage["input_tokens"]
+                    and 0 <= parsed_usage["output_tokens"] <= max_output
+                    and 0 <= parsed_usage["reasoning_output_tokens"] <= max_output
+                    and 0 <= parsed_usage["total_tokens"] <= max_input + max_output):
+                usage = parsed_usage
     return CliResult(reply, session_id, usage, searched_web)
 
 
