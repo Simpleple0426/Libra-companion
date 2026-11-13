@@ -194,8 +194,10 @@ class TurnPipeline:
                 if row['payload_hash'] != digest:
                     raise ValueError('request_id_content_conflict')
                 return row['message_id']
+            quote = (identity or {}).get('quoted_message')
             mid = save_message('user', content, source=source,
-                               message_type=message_type, connection=c)
+                               message_type=message_type, connection=c,
+                               **({'quoted_message': quote} if quote is not None else {}))
             c.execute('INSERT INTO cognition_inputs VALUES (?,?,?,?)', (request_key, digest, mid, utc()))
             return mid
 

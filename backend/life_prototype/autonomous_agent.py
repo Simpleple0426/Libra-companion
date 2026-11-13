@@ -10,6 +10,50 @@ import uuid
 from .config import canonical, digest
 from .activity_engine import require
 from .cognition_contracts import shape
+from .clock import utc
+
+
+def decision_state(state):
+    """A bounded observation, not a replacement for authoritative host state."""
+    view = deepcopy(state)
+    counts = {}
+    activities = view.get('activities', {})
+    keep = set(list(activities)[-8:])
+    keep.update(k for k, a in list(activities.items())[-80:]
+                if a.get('status') == 'interrupted' and a.get('kind') in {'reading', 'watching'})
+    if view.get('active'):
+        keep.add(view['active'])
+    view['activities'] = {k: a for k, a in activities.items() if k in keep}
+    counts['activities'] = len(activities) - len(view['activities'])
+    def references(value):
+        if isinstance(value, str):
+            return {value}
+        if isinstance(value, dict):
+            return set().union(*(references(v) for v in value.values())) if value else set()
+        if isinstance(value, list):
+            return set().union(*(references(v) for v in value)) if value else set()
+        return set()
+    current_refs = references(view['activities'])
+    for key in ('housework_steps', 'meal_plans', 'care_plans', 'work_steps', 'housework_plans',
+                'work_sessions', 'meals', 'outing_sessions', 'exercise_sessions', 'rest_sessions'):
+        value = view.get(key)
+        if isinstance(value, dict):
+            selected = set(list(value)[-8:]) | (set(value) & current_refs)
+            view[key] = {k: v for k, v in value.items() if k in selected}
+            counts[key] = len(value) - len(view[key])
+        elif isinstance(value, list):
+            counts[key] = max(0, len(value) - 8)
+            view[key] = value[-8:]
+    for key in ('gaps', 'companionships'):
+        if isinstance(view.get(key), list):
+            view[key] = view[key][-8:]
+    if isinstance(view.get('sleep', {}).get('episodes'), list):
+        view['sleep']['episodes'] = view['sleep']['episodes'][-2:]
+    if isinstance(view.get('commitments'), list):
+        view['commitments'] = [c for c in view['commitments'] if c.get('status') == 'confirmed']
+    view['observation_scope'] = {'historical_entries_omitted': counts,
+        'rule': 'Current state and recent records only; omitted history remains stored. Use skill tools for current plans and memory.search for history.'}
+    return view
 
 
 TOOLS = {
@@ -69,7 +113,7 @@ INSTRUCTION = '''你是左然的自主生活Agent。你独立维护自己的生�
 明确邀请或要求陪伴统一使用companion.revise，不使用旧的定时appointments估算结束。单纯“我准备去漫展”不是邀请。
 assistant_replies是角色已经发送的回复。明确答应调整自身行程时，用agenda.revise的itinerary_changes落实，可自主选择合理时间，例如“我早点回家”“我准备回去”。客套、否定、引用和假设不是承诺；不能据此调用companion.revise或修改用户预约。立即回家包括“急急急 回家！”，start_at用null，不填模型调用时的钟点。
 聊天影响Life分两条路径：明确陪用户进入companion；“早点回家/今晚别去健身/把运动改到七点/今晚在家看书”是自己的行程调整，使用agenda.revise的itinerary_changes，不得写成陪用户。
-用户关心或普通聊天不自动修改。先读当前日程、实际活动、位置和约定，结合人设判断；请求不明确则clarify。“早点回家”先协商具体出发时间，“现在回家”可直接return_home；不要把要求到家时间当成出发时间，需计入实际通勤。
+用户关心或普通聊天不自动修改。先读当前日程、实际活动、位置和约定，结合对话语义及人设自主判断，不依赖关键词。“早点回家”可自行选择可行的出发时间并说明理由；仅关键信息不足时clarify。“现在回家”可直接return_home且start_at用null；不要把要求到家时间当成出发时间，需计入实际通勤。
 用户明确取消某活动可按当前日程ID直接cancel；替换或改时段必须确定开始和结束/原活动时长。必要餐食洗漱、已确认陪伴和预约不能被覆盖，冲突要解释和协商。提交成功前不得声称安排已修改。
 开始时间必须已明确：只说“陪我去漫展”不可默认现在，先agenda.revise clarify询问“什么时候出发？”。“明天”或“今天”也不足以确定开始时间。结束时间不强制要求、不估算。
 用户说“现在陪我”或上下文明确马上开始可立即进入；上下文已明确具体开始时间则沿用，不重复询问。引用上下文须传context_message_id，不允许编造时间。
@@ -126,7 +170,7 @@ class LifeAgent:
 
     def messages(self):
         with self.store.connect() as db:
-            rows = db.execute("SELECT a.message_id,a.status,m.request,a.receipt FROM life_agenda_messages a JOIN life_received_messages m ON m.id=a.message_id WHERE a.status IN ('pending','running') ORDER BY a.rowid LIMIT 8").fetchall()
+            rows = db.execute("SELECT a.message_id,a.status,m.request,a.receipt FROM life_agenda_messages a JOIN life_received_messages m ON m.id=a.message_id WHERE a.status IN ('pending','running') AND (a.retry_at IS NULL OR a.retry_at<=?) ORDER BY a.rowid LIMIT 8", (self.s.clock.now().isoformat(),)).fetchall()
             recent = db.execute('SELECT id,request FROM life_received_messages ORDER BY rowid DESC LIMIT 8').fetchall()
         return {'pending': [{'id': r[0], 'status': r[1], **json.loads(r[2]),
                               'prior_error': json.loads(r[3]) if r[3] else None} for r in rows],
@@ -258,7 +302,7 @@ class LifeAgent:
                 capture(db, state, self.s.p.config)
                 continuity = continuity_view(db, state, self.s.p.config)
                 pending = [r[0] for r in db.execute('SELECT id FROM life_observations WHERE processed=0 ORDER BY rowid LIMIT 20')]
-            return {'state': state, 'life_continuity': continuity, 'unassimilated_observations': pending, 'events': self._events()}
+            return {'state': decision_state(state), 'life_continuity': continuity, 'unassimilated_observations': pending, 'events': self._events()}
         if tool == 'messages.read': return self.messages()
         if tool == 'agenda.read':
             from .fine_plan import view
@@ -320,7 +364,7 @@ class LifeAgent:
             return {'wait_seconds': seconds, 'reason': args['reason'], 'coarse_execution': required}
         raise ValueError('unknown life tool')
 
-    def _finish(self, run_id, status, seconds):
+    def _finish(self, run_id, status, seconds, error=None):
         state = self.s.p.snapshot()
         active = state['activities'].get(state.get('active'))
         action = {'operation': 'continue' if active else 'wait', 'activity_id': state.get('active'),
@@ -328,6 +372,8 @@ class LifeAgent:
         result = {'agent_run_id': run_id, 'agent_status': status, 'agent_wait_seconds': seconds,
                   'at': self.s.clock.now().isoformat(), 'selected': {'action': action},
                   'active_activity': state.get('active'), 'state_revision': state['revision']}
+        if error:
+            result['error'] = error
         from .coarse_plan_execution import requirement
         result['coarse_execution'] = requirement(self.cog, state)
         if status != 'waiting' and result['coarse_execution']:
@@ -341,8 +387,18 @@ class LifeAgent:
             if status != 'waiting':
                 message_id = self.pending_message()
                 if message_id:
-                    db.execute("UPDATE life_agenda_messages SET status='needs_review',receipt=? WHERE message_id=?",
-                               (canonical({'reason': status, 'at': result['at'], 'schedule_changed': False}), message_id))
+                    from datetime import timedelta
+                    from .coarse_plan import schedule_day
+                    attempts, request = db.execute('SELECT a.attempts,m.request FROM life_agenda_messages a JOIN life_received_messages m ON m.id=a.message_id WHERE a.message_id=?', (message_id,)).fetchone()
+                    attempts += 1
+                    received = json.loads(request).get('received_at')
+                    stale = received and schedule_day(utc(received)) != schedule_day(self.s.clock.now())
+                    review_status = 'expired' if stale else 'needs_review' if attempts >= 3 else 'pending'
+                    retry_at = ((self.s.clock.now() + timedelta(seconds=30 * attempts)).isoformat()
+                                if review_status == 'pending' else None)
+                    db.execute('UPDATE life_agenda_messages SET status=?,attempts=?,retry_at=?,receipt=? WHERE message_id=?',
+                               (review_status, attempts, retry_at, canonical({'reason': status, 'error': error,
+                                'at': result['at'], 'schedule_changed': False, 'retry_at': retry_at}), message_id))
             db.execute("UPDATE life_agent_runs SET status='done',receipt=? WHERE id=?", (canonical(result), run_id))
             stale = [row[0] for row in db.execute(
                 "SELECT id FROM life_agent_runs WHERE status='done' ORDER BY rowid DESC LIMIT -1 OFFSET 30"
@@ -391,6 +447,19 @@ class LifeAgent:
                     return self._finish(run_id, 'budget_exhausted', 60)
                 snapshot = self.cog._snapshot()
                 history = [{'call': json.loads(r[1]), 'result': json.loads(r[2])} for r in rows]
+                # Old read results are superseded by newer observations. Keep
+                # action receipts, but do not multiply full state snapshots.
+                seen_reads = set()
+                for item in reversed(history):
+                    tool = item['call']['tool']
+                    if tool == 'state.read' and item['result'].get('ok'):
+                        data = item['result'].get('data', {})
+                        if isinstance(data.get('state'), dict):
+                            data['state'] = decision_state(data['state'])
+                    if tool.endswith('.read'):
+                        if tool in seen_reads:
+                            item['result'] = {'superseded_by_later_read': True}
+                        seen_reads.add(tool)
                 payload = {'persona': self.cog.persona, 'now': snapshot['local_now'],
                            'trigger': {'id': trigger_id, 'message_id': message_id},
                            'pending_message_id': self.pending_message(), 'tools': TOOLS,
@@ -404,9 +473,12 @@ class LifeAgent:
                     require(isinstance(request['tool'], str) and request['tool'] in TOOLS, 'unsupported tool')
                     require(isinstance(request['arguments_json'], str) and len(request['arguments_json']) <= 20000, 'invalid arguments')
                     failures = 0
-                except Exception:
+                except Exception as error:
                     failures += 1
-                    if failures >= 3: return self._finish(run_id, 'model_unavailable', 60)
+                    if failures >= 3:
+                        from .model_client import ModelError
+                        detail = str(error)[:1000] if isinstance(error, ModelError) else type(error).__name__
+                        return self._finish(run_id, 'model_unavailable', 60, error=detail)
                     continue
                 step_id = run_id + ':step:' + str(len(rows))
                 with self.store.connect() as db:

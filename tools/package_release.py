@@ -14,6 +14,10 @@ EXCLUDED_DIRS = {'.git', '__pycache__', '.pytest_cache', '.dart_tool', '.gradle'
                  '.idea', 'node_modules', 'build', 'dist', 'data', 'secrets', 'uploads',
                  'private_reading', 'room_media', 'backups', 'logs', 'xhs_runs'}
 EXCLUDED_FILES = {'local.properties', 'key.properties', 'google-services.json',
+                  'private_life_sharing_rules.md',
+                  'private_older_partner_style_rules.md',
+                  'private_domestic_life_rules.md',
+                  'private_emotional_support_rules.md',
                   '.flutter-plugins-dependencies', '.secret', '.netease_cred', 'netease_session.cookie'}
 
 

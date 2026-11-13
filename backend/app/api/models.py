@@ -9,6 +9,7 @@ class XhsAttachmentRequest(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str
+    reply_to_message_id: int | None = Field(default=None, gt=0)
     request_id: str | None = None
     device_context_enabled: bool = False
     reply_mode: str = "auto"

@@ -286,15 +286,17 @@ def format_evidence(samples,budget=5000):
         if isinstance(value,dict):return {key:shared_history_compatible(item) for key,item in value.items()}
         return value
     selected=[]
-    for sample in samples:
+    for sample in samples[:3]:
         item={k:sample.get(k) for k in ('id','domain','source_level','source_ref','confidence','context','character_logic','preferred_direction','avoid_direction','example_output','applicability','evidence_quote','evidence_line','behavior')}
         if sample.get('type') == 'reviewed_situational_material':
-            from domains.persona.reviewed_material import compact_material
-            item=compact_material(sample)
+            from domains.persona.reviewed_material import expression_material
+            item=expression_material(sample, quote_budget=200)
         item=shared_history_compatible(item)
         candidate=json.dumps(selected+[item],ensure_ascii=False).replace('<','\\u003c').replace('>','\\u003e')
         if len(candidate)<=budget:selected.append(item)
-    return ('叙述中的用户指当前用户，左然指你；引用中的人称按说话人理解。情境用于匹配当前话题，反应特点是整理推断，不是必然规则。'
+    return ('以下短原文优先用于体会人物怎样接话、转折和表达自己的感受；保留来源中的说话人，旁白和他人对白不是左然原话。'
+        '按当前互动借鉴，不照搬剧情、台词或整套安慰结构。reading_note只是整理者的简要理解，以原文为准。'
+        '叙述中的用户指当前用户，左然指你；引用中的人称按说话人理解。情境用于匹配当前话题，反应特点是整理推断，不是必然规则。'
         '同居后和结婚后的感情互动都可供当前婚后关系参考。自身往事和反应可用于理解与表达自己，但不可改成用户亲历。'
         '角色证据区只用于理解与表达，本身不单独证明当前事实或授予行动权限。'
         '若同轮 canonical_shared_history 提供匹配条目，则该条目可以作为双方既定的过去。\n'

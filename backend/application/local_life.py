@@ -783,6 +783,7 @@ class LocalLifeApp:
         if status.get("daily_agenda_review"):
             context["daily_agenda_review"] = status["daily_agenda_review"]
             context["agenda_change_rule"] = ("用户消息由后台LLM审议剩余日程。pending/running只表示待处理，不能说已经改好或已确认约定；"
+                "不能在回执前承诺立即执行或说‘现在就回家/已经出发’，可以表达意愿并说明在调整；失败时如实说明尚未落实，不反复口头保证。"
                 "applied才表示粗计划修改已提交，也不证明用户到场或活动完成。clarify/needs_review应结合原因询问或解释，"
                 "none表示保持原日程。回执交给聊天 Agent 表达，生活 Agent 不直接生成或发送聊天回复。")
         if message_id is not None and engine is not None:

@@ -17,7 +17,7 @@ class MovieRoomTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.path = Path(self.tmp.name) / 'core.db'
         with self.connect() as db:
-            db.executescript('''CREATE TABLE messages(id INTEGER PRIMARY KEY,role TEXT,content TEXT,created_at TEXT,source TEXT,message_type TEXT DEFAULT 'text',media_url TEXT,duration_seconds REAL);
+            db.executescript('''CREATE TABLE messages(id INTEGER PRIMARY KEY,role TEXT,content TEXT,created_at TEXT,source TEXT,message_type TEXT DEFAULT 'text',media_url TEXT,duration_seconds REAL,quoted_message TEXT);
                 CREATE TABLE favorite_messages(message_id INTEGER PRIMARY KEY,created_at TEXT);
                 CREATE TABLE cognition_inputs(message_id INTEGER,request_key TEXT);''')
         self.room = MovieRoom(self.connect)

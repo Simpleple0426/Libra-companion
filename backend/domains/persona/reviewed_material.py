@@ -72,6 +72,48 @@ def import_material(store, source=SOURCE):
     return {'records':len(samples),'excerpts':sum(len(s['bound_excerpts']) for s in samples)}
 
 
+def expression_material(sample, *, quote_budget=200):
+    """A bounded, verbatim window from imported, source-validated material.
+
+    Attribution stays attached to its source; narration and other speakers are
+    never relabeled as the character's own dialogue.
+    """
+    item = {'id': sample['id'], 'context': sample.get('context', '')[:120],
+            'quote_attribution': sample.get('quote_attribution'), 'source_excerpts': []}
+    anchor = sample.get('evidence_line')
+    excerpts = sample.get('bound_excerpts') or []
+    ordered = sorted(excerpts, key=lambda x: not (
+        isinstance(anchor, int) and x['line_start'] <= anchor <= x['line_end']))
+    for excerpt in ordered:
+        lines = excerpt['text'].splitlines()
+        if not lines:
+            continue
+        index = anchor - excerpt['line_start'] if isinstance(anchor, int) else 0
+        index = max(0, min(index, len(lines) - 1))
+        # Keep the quote's preceding turn when it fits. Only whole, contiguous
+        # source lines are included, with exact line references.
+        if len(lines[index]) > quote_budget:
+            continue
+        start = index
+        end = index + 1
+        for _ in range(2):
+            if start > 0 and len('\n'.join(lines[start-1:end])) <= quote_budget:
+                start -= 1
+            if end < len(lines) and len('\n'.join(lines[start:end+1])) <= quote_budget:
+                end += 1
+        text = '\n'.join(lines[start:end])
+        item['source_excerpts'].append({
+            'source_path': excerpt['source_path'],
+            'line_start': excerpt['line_start'] + start,
+            'line_end': excerpt['line_start'] + end - 1,
+            'text': text,
+        })
+        break
+    # A missing short source is not replaced with an invented sample reply.
+    item['reading_note'] = sample.get('observed_response', '')[:80]
+    return item
+
+
 def compact_material(sample, *, include_source=False):
     item={k:sample[k] for k in ['id','context','character_logic','subject_scope','source_stage',
         'story_context','observed_response','evidence_kind','interpretation_status','quote_attribution','evidence_quote']}

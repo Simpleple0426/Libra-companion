@@ -1,6 +1,5 @@
 """Replayable bridge from delivered chat replies to personal itinerary review."""
 import json
-import re
 from life_prototype.config import canonical
 
 
@@ -26,15 +25,12 @@ def sync(engine, host):
                         db.execute('UPDATE life_reply_cursor SET value=? WHERE id=1', (mid,))
                         continue
                     break  # inbox delivery has not committed yet; retry next poll
-                if row[1] in {'pending', 'running'}:
+                if row[1] == 'running':
                     break  # preserve the original request's normal interpretation
-                # Only forward personal-life candidates. The agent judges actual
-                # commitment, negation and quotes, rather than blindly executing.
-                if row[1] != 'applied' and '陪' not in content and re.search(r'我.{0,24}(回家|回去|出发|下班|健身|运动|看书|看电影|休息|加班)', content):
+                # Every delivered reply is context. Only the agent decides
+                # whether it expresses a commitment; wording never gates review.
+                if row[1] != 'applied':
                     request = json.loads(row[0])
-                    if '陪' in request['content']:
-                        db.execute('UPDATE life_reply_cursor SET value=? WHERE id=1', (mid,))
-                        continue
                     replies = request.setdefault('assistant_replies', [])
                     if not any(r['id'] == mid for r in replies):
                         replies.append({'id': mid, 'content': content})

@@ -103,12 +103,18 @@ class CliModel:
         schema_value = stage_schema(stage,payload)
         request = {'stage': stage, 'boundary': boundary, 'instruction': instruction, 'context': payload,
             'transport': 'Return only the stage JSON object matching the output schema. No extra fields, tools, files, hidden history, or external information.'}
+        request_bytes = canonical(request).encode('utf8')
+        # The CLI input reader rejects oversized prompts before a structured
+        # turn starts. Fail explicitly rather than hiding it as model downtime.
+        if len(request_bytes) > 900000:
+            raise ModelError('CLI input too large: ' + str(len(request_bytes)) + ' bytes; reduce observation/history')
         ident = uuid.uuid4().hex
         directory = self.budget.directory/'calls'/ident
         directory.mkdir(parents=True)
         (directory/'input.json').write_text(canonical(request), encoding='utf8')
         (directory/'schema.json').write_text(canonical(schema_value),encoding='utf8')
         record = {'id': ident, 'stage': stage, 'provider': self.provider, 'status': 'prepared',
+            'input_bytes': len(request_bytes),
             'session_policy': 'new ephemeral thread per call; never resume', 'tools_allowed': False,
             'adapter_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             'schema_sha256':hashlib.sha256(canonical(schema_value).encode('utf8')).hexdigest()}
@@ -139,7 +145,7 @@ class CliModel:
                     while chunk := process.stderr.read(4096):
                         if len(errors) < 4: errors.append(chunk)
                 def write():
-                    try: process.stdin.write(canonical(request).encode('utf8')); process.stdin.close()
+                    try: process.stdin.write(request_bytes); process.stdin.close()
                     except OSError: pass
                 workers = [threading.Thread(target=fn, daemon=True) for fn in (read, drain, write)]
                 for worker in workers: worker.start()
@@ -170,7 +176,8 @@ class CliModel:
                             any(x in line.lower() for x in ('unknown feature', 'error loading config', 'invalid', 'missing field', 'unexpected argument'))
                             and not any(x in line.lower() for x in ('token', 'secret', 'api_key', 'authorization'))]
                         record['startup_diagnostic'] = safe_lines[:6]
-                        raise ModelError('CLI exited without completed structured turn; '+ '; '.join(safe_lines[:3]))
+                        raise ModelError('CLI exited without completed structured turn (exit=' + str(process.poll())
+                                         + ', input_bytes=' + str(len(request_bytes)) + '); ' + '; '.join(safe_lines[:3]))
                     try: event = json.loads(raw)
                     except (ValueError, UnicodeDecodeError): raise ModelError('CLI malformed event stream') from None
                     typ = event.get('type')

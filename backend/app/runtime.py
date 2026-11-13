@@ -490,8 +490,12 @@ def _rotate_unavailable_main_thread() -> bool:
 
 def _is_unresumable_codex_error(error: Exception) -> bool:
     text = str(error).lower()
-    return ('thread/resume' in text and
-            ('failed to resolve rollout path' in text or 'file does not exist' in text))
+    missing_rollout = ('thread/resume' in text and
+                       ('failed to resolve rollout path' in text or 'file does not exist' in text))
+    exhausted_context = ('context_length_exceeded' in text or
+                         'ran out of room in the model' in text and 'context window' in text or
+                         'exceeds the context window' in text)
+    return missing_rollout or exhausted_context
 
 
 def _open_local_life_engine(run_id: str):
@@ -2759,7 +2763,23 @@ def _run_codex(
                 fresh_prompt += _sticker_instruction()
                 print(f'[libra] retrying failed resume in a fresh thread: {stale_session}', flush=True)
                 try:
-                    result = generate_response(fresh_prompt, None)
+                    if chat_tools is not None and (source in {'user_chat', 'user_chat_retry'} or generation_context.get('agentic_proactive')):
+                        # Recovery must retain tool validation and the emotion gate.
+                        generation_context['session_recovery'] = {'reason': 'unresumable_or_exhausted_context',
+                                                                  'previous_thread_id': stale_session}
+                        result = run_main_chat(fresh_prompt, None, generation_context,
+                            chat_tools, knowledge_retriever, get_messages(8), generate_response,
+                            lambda step: _record_llm_usage(step, step.session_id, source + '_tool_step'),
+                            remember_agent_session)
+                        generation_context['tool_executions'] = chat_tools.executor.receipts
+                        for name, receipt in chat_tools.receipts.items():
+                            generation_context['current_event'].setdefault('tool_results', {})[name] = receipt
+                        from application.source_usage import preferences
+                        with memory_store.connect() as connection:
+                            generation_context['source_preferences'] = preferences(connection, generation_context, False)
+                        turn_pipeline.checkpoint(generation_context)
+                    else:
+                        result = generate_response(fresh_prompt, None)
                 except Exception as retry_error:
                     turn_pipeline.failure(generation_context, 'generation', type(retry_error).__name__)
                     raise
@@ -4661,6 +4681,9 @@ def _limit_letter_content(value: str, maximum: int = 500) -> str:
 
 
 def _review_proactive_letter(now: datetime) -> None:
+    with chat_retry_lock:
+        if any(item.get('status') in {'pending', 'running'} for item in chat_retry_state.values()):
+            return
     if get_app_setting("proactive_enabled", "false") != "true" or _is_sleeping():
         return
     if not 8 <= now.hour < 23 or codex_lock.locked():
@@ -5515,6 +5538,7 @@ async def upload_chat_image_with_caption(
     location_text: str = Form(""),
     taken_at: str = Form(""),
     request_id: str | None = Form(None),
+    reply_to_message_id: int | None = Form(None),
 ):
     if request_id and (len(request_id) > 128 or not re.fullmatch(r'[A-Za-z0-9_.:-]+', request_id)):
         raise HTTPException(status_code=400, detail='request_id 格式不正确')
@@ -5535,6 +5559,7 @@ async def upload_chat_image_with_caption(
         _chat_impl,
         ChatRequest(
             message=caption,
+            reply_to_message_id=reply_to_message_id,
             request_id=request_id,
             device_context_enabled=device_context_enabled,
             reply_mode=reply_mode,
@@ -5588,7 +5613,14 @@ async def upload_chat_voice(
     duration_seconds: int = Form(...),
     device_context_enabled: bool = Form(False),
     reply_mode: str = Form("auto"),
+    reply_to_message_id: int | None = Form(None),
 ):
+    from application.message_quotes import resolve as resolve_quote
+    try:
+        with memory_store.connect() as connection:
+            quoted_message = resolve_quote(connection, reply_to_message_id)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
     extension = Path(file.filename or "voice.wav").suffix.lower()
     if extension not in {".wav", ".m4a", ".mp3", ".webm", ".ogg"}:
         raise HTTPException(status_code=415, detail="不支持这种录音格式")
@@ -5614,6 +5646,7 @@ async def upload_chat_voice(
     message_id = save_message(
         "user", transcript, message_type="voice", media_url=media_url,
         duration_seconds=duration, voice_emotion=emotion,
+        quoted_message=quoted_message,
     )
     saved = get_messages_after(message_id - 1, limit=1)
     from domains.affect.message_description import user_message_description
@@ -6287,10 +6320,14 @@ def chat_status(request_id: str | None = None):
         if receipt:
             accepted = True
             replies = json.loads(receipt['replies']) if receipt['replies'] is not None else []
-    retry = None
+    retry = {}
     if request_id:
         with chat_retry_lock:
             retry = dict(chat_retry_state.get(request_id) or {})
+    else:
+        with chat_retry_lock:
+            retry = next((dict(item) for item in chat_retry_state.values()
+                          if item.get('status') in {'pending', 'running'}), {})
     return {'success': True,
             'pending': chat_turn_lock.locked() or music_room_chat.lock.locked()
                        or retry.get('status') in {'pending', 'running'},
@@ -6343,6 +6380,11 @@ def _schedule_chat_retry(request: ChatRequest, message_id: int | None, message_s
             if result.get('success'):
                 with chat_retry_lock:
                     chat_retry_state.pop(request.request_id, None)
+            elif not result.get('retry_scheduled'):
+                with chat_retry_lock:
+                    state = chat_retry_state.get(request.request_id)
+                    if state and state.get('attempt') == attempt:
+                        state.update(status='failed', error=str(result.get('error') or 'reply_failed'))
         except Exception as retry_error:
             with chat_retry_lock:
                 state = chat_retry_state.get(request.request_id)
@@ -6419,6 +6461,16 @@ def _chat_turn(
     saved_user_message_id: int | None = original_message_id
     if request.request_id and (len(request.request_id) > 128 or not re.fullmatch(r'[A-Za-z0-9_.:-]+', request.request_id)):
         raise HTTPException(status_code=400, detail='request_id 格式不正确')
+    from application.message_quotes import resolve as resolve_quote, stored as stored_quote, prompt as quote_prompt
+    quoted_message = None
+    if request.reply_to_message_id is not None or original_message_id is not None:
+        try:
+            with memory_store.connect() as connection:
+                quoted_message = (stored_quote(connection, original_message_id) if original_message_id is not None
+                                  else resolve_quote(connection, request.reply_to_message_id, source=message_source))
+        except ValueError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+    quote_identity = {'quoted_message': quoted_message} if quoted_message else {}
     xhs_attachment_payload: dict | None = None
     if request.xhs_attachment is not None:
         try:
@@ -6447,7 +6499,7 @@ def _chat_turn(
                     json.dumps(xhs_attachment_payload, ensure_ascii=False) if xhs_attachment_payload else request.message,
                     'xhs_card' if xhs_attachment_payload else 'text',
                     {'reply_mode': request.reply_mode, 'music_context': request.music_context,
-                     'device_context_enabled': request.device_context_enabled},
+                     'device_context_enabled': request.device_context_enabled, **quote_identity},
                     source=message_source)
             except ValueError as error:
                 raise HTTPException(status_code=409, detail=str(error)) from error
@@ -6471,7 +6523,7 @@ def _chat_turn(
                 json.dumps(xhs_attachment_payload, ensure_ascii=False) if xhs_attachment_payload else request.message,
                 'xhs_card' if xhs_attachment_payload else 'text',
                 {'reply_mode': request.reply_mode, 'music_context': request.music_context,
-                 'device_context_enabled': request.device_context_enabled},
+                 'device_context_enabled': request.device_context_enabled, **quote_identity},
                 source=message_source)
         except ValueError as error:
             raise HTTPException(status_code=409, detail=str(error)) from error
@@ -6527,6 +6579,7 @@ def _chat_turn(
         user_message, album_save_requested, letter_requested)
     xhs_chat_context, xhs_search_receipt, xhs_image_paths = tool_decision.external_context(request)
     user_message += xhs_chat_context
+    user_message += quote_prompt(quoted_message)
     model_image_paths = ([image_path] if image_path is not None else []) + xhs_image_paths
     reply_mode = request.reply_mode if request.reply_mode in {"auto", "voice", "text"} else "auto"
     requested_mode = _requested_reply_mode(request.message)
@@ -6536,7 +6589,7 @@ def _chat_turn(
     from application.turn_routing import route_turn
     recent_for_route = [m for m in get_messages(7) if m.get('id') != saved_user_message_id]
     recent_for_route.sort(key=lambda m: m.get('id', 0))
-    processing_route = route_turn(input_text, recent_for_route, has_attachment=image_path is not None or request.xhs_attachment is not None)
+    processing_route = route_turn(input_text, recent_for_route, has_attachment=image_path is not None or request.xhs_attachment is not None or quoted_message is not None)
     processing_route['affect_agent'] = True
     from domains.memory.recall_queries import plan as plan_queries
     query_plan = plan_queries(input_text, recent_for_route, input_snapshot)
@@ -6569,6 +6622,8 @@ def _chat_turn(
         cognitive_context['image_paths'] = [str(image_path)]
         cognitive_context['current_event']['attachments'] = [{'kind': 'user_image', 'source_ref': str(image_path), 'interpretation_is_fact': False}]
     cognitive_context["current_event"]["message_id"] = saved_user_message_id
+    if quoted_message:
+        cognitive_context['current_event']['quoted_message'] = quoted_message
     cognitive_context["character_evidence"] = []
     from application.automatic_retrieval import preload as preload_knowledge
     recent_for_retrieval = [m for m in get_messages(11) if m.get('id') != saved_user_message_id]

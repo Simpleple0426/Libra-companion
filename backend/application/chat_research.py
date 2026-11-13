@@ -89,6 +89,8 @@ def research(context, decision, retriever, model, recent, thread_id=None, *, mai
     seen = set()
     external = []
     observations = []
+    sent_observations = 0
+    sent_receipts = {}
     character_reference = retriever.evidence_formatter(context.get('character_evidence', [])) if context.get('character_evidence') else ''
     existing_knowledge = context.get('supporting_knowledge', '')
     match = re.search(r'<canonical_shared_history>.*?</canonical_shared_history>', existing_knowledge, re.S)
@@ -120,6 +122,10 @@ def research(context, decision, retriever, model, recent, thread_id=None, *, mai
                 + '每轮最多两个调用，最多三轮查询。要查资料只输出 {"calls":[{"tool":"工具名","query":"参数"}]}；'
                   '信息足够时直接按原聊天格式输出非空 messages。不要同时输出 calls 和 messages，'
                   '不要输出空 calls 来结束：直接回复。查询请求不会发送给用户。\n')
+            if main_thread and index:
+                instruction = ('继续本轮对话，沿用已提供的工具协议。以下仅补充新增查询结果；'
+                               '信息足够就回复，否则在剩余预算内查询，不重复执行旧请求。'
+                               '最终回复前仍须取得 emotion.await 结果。')
             if context.get('agentic_proactive'):
                 from application.proactive_agent import requires_contact
                 if requires_contact(context):
@@ -129,7 +135,7 @@ def research(context, decision, retriever, model, recent, thread_id=None, *, mai
                 else:
                     instruction += ('本轮是主动事件，是否发送由你决定；覆盖非空回复要求，'
                                     '可以输出 {"messages":[]} 结束本轮并保持安静。')
-            raw = model(instruction + '\n输入数据：\n' + dumps({
+            data = {
                 'message': context['current_event']['content'],
                 'recent_messages': [{'role': m.get('role'), 'content': str(m.get('content', ''))[:1000]}
                                     for m in recent[-8:]],
@@ -143,7 +149,28 @@ def research(context, decision, retriever, model, recent, thread_id=None, *, mai
                     for name, receipt in decision.receipts.items()},
                 'automatic_retrieval': context.get('automatic_retrieval', {}),
                 'observations': observations,
-            }).replace('<', '\\u003c').replace('>', '\\u003e'))
+            }
+            if main_thread:
+                # The first call already carries the current turn prompt, and
+                # the CLI session retains persona, dialogue and earlier results.
+                # Audit data remains complete in context; only model input is a delta.
+                added = observations[sent_observations:]
+                observed_tools = {item['tool'] for item in added}
+                receipts = {}
+                for name, receipt in decision.receipts.items():
+                    encoded = dumps(receipt)
+                    if sent_receipts.get(name) != encoded and name not in observed_tools:
+                        receipts[name] = {'status': receipt['status'],
+                            'result': dumps(receipt.get('data', receipt.get('error')))[:7000]}
+                gate = context.get('emotion_gate', {'received': True})
+                data = {'round': index + 1, 'remaining_rounds': 3 - index,
+                        'emotion_gate': {key: gate[key] for key in ('status', 'received') if key in gate},
+                        'new_results': added, 'new_receipts': receipts}
+                if index == 0:
+                    data['constraints'] = context.get('generation_constraints', [])
+            raw = model(instruction + '\n输入数据：\n' + dumps(data).replace('<', '\\u003c').replace('>', '\\u003e'))
+            sent_observations = len(observations)
+            sent_receipts = {name: dumps(receipt) for name, receipt in decision.receipts.items()}
             value = json.loads(raw) if isinstance(raw, str) else raw
             if main_thread and isinstance(value, dict) and 'messages' in value and 'calls' not in value:
                 messages = value['messages']
@@ -267,6 +294,9 @@ def research(context, decision, retriever, model, recent, thread_id=None, *, mai
                                  'result': dumps(receipt.get('data', receipt.get('error')))[:7000]})
         if not progressed and index == 2:
             trace['stop_reason'] = 'duplicate_calls'
+    if main_thread:
+        # The final tool round may still have results the model has not seen.
+        trace['pending_observations'] = observations[sent_observations:]
     context['memory_usage']['allowed_memory_ids'] = [m['memory_id'] for m in packet.get('memories', [])]
     context['supporting_memory_ids'] = []
     context['supporting_knowledge'] = retained_knowledge + shared_history + '\n'.join(external)

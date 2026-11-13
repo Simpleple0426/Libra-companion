@@ -73,9 +73,34 @@ def build(now=None,*,attributes=None,life=None,user_status=None,status_at=None,l
         }}
 
 
+def response_life_snapshot(life):
+    """Keep current facts; historical ledgers remain in storage and CLI history."""
+    if not isinstance(life, dict):
+        return life
+    result = dict(life)
+    continuity = life.get('life_continuity')
+    if isinstance(continuity, dict):
+        result['life_continuity'] = {
+            key: value for key, value in continuity.items()
+            if key not in {'recent_events', 'recent_sent_messages', 'threads'}
+        }
+        result['life_continuity']['threads'] = [
+            {key: value for key, value in item.items() if key != 'milestones'}
+            for item in continuity.get('threads', []) if item.get('is_current_activity')
+        ]
+        for key in ('private_thoughts', 'work_notes'):
+            if isinstance(continuity.get(key), list):
+                result['life_continuity'][key] = continuity[key][:1]
+    delivery = life.get('life_agent_delivery')
+    if isinstance(delivery, dict):
+        result['life_agent_delivery'] = {key: value for key, value in delivery.items()
+                                         if key != 'recent_deliveries'}
+    return result
+
+
 def project(snapshot,consumer):
     if consumer == 'response':
-        return {**({'local_life': snapshot['local_life']} if 'local_life' in snapshot else {}),
+        return {**({'local_life': response_life_snapshot(snapshot['local_life'])} if 'local_life' in snapshot else {}),
                 'current_time': (snapshot.get('temporal') or {}).get('local_time', snapshot.get('generated_at')),
                 'libra': {key: snapshot.get('libra', {}).get(key, {}).get('value', 'unknown')
                           for key in ('activity', 'location_name')},

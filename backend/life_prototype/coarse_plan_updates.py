@@ -21,7 +21,7 @@ assistant_replies是角色已经发送的回复。明确答应调整自身行程
 itinerary_changes每项为{operation:"cancel|replace|reschedule|return_home",item_id:ID或null,start_at:ISO或明确现在时null,end_at:ISO或null,activity:活动或null,place_id:真实地点ID或null}。
 cancel仅填item_id；reschedule填item_id及新起止时间；replace填起止时间、activity和place_id；return_home只填出发时间start_at，其余null。未使用字段必须null。
 活动可选home_activity/resting/working/reading/watch_movie/watch_tv/exercising/housework/outing。只改本生活日剩余时段，不覆盖必要用餐洗漱、已有预约和陪伴；return_home后在家自主生活，正常通勤不瞬移。
-模糊的早点先clarify协商具体时间，明确取消已有活动可直接按ID取消；无关聊天none。行程修改时其他修改数组为空；none/clarify时所有修改数组都为空。
+自己的行程可自主选择可行时间：“早点回家”结合剩余事项、通勤和她的期待决定何时出发，在reason说明依据；只有影响可行性的关键信息缺失才clarify。不要求固定措辞或用户报出钟点。明确现在出发时start_at用null，在提交时解析。无关聊天none。行程修改时其他修改数组为空；none/clarify时所有修改数组都为空。
 无法确定日期、时间或指代，返回 clarify，reason 写清需要澄清什么。相对日期以消息 received_at 为准，不以处理时间推移。
 只能修改未来安排。不要改变睡眠状态、工作日历、用户状态或已发生事实。
 cancel_item_ids 只列原计划中不再需要的可选活动 ID，例如取消观影；不可取消用餐、洗澡、睡前洗漱或卧室准备。
@@ -88,9 +88,8 @@ def validate_proposal(proposal, message, body, state, config, now):
     require(changes or any(proposal[k] for k in ("cancel_item_ids", "cancel_appointment_ids", "appointments")), "empty agenda revision")
     require(not changes or not any(proposal[k] for k in ('appointments', 'cancel_appointment_ids', 'cancel_item_ids')),
             '行程调整与预约修改须分别协商提交，不能混合覆盖')
-    if message.get('assistant_replies'):
-        require(changes and not any(proposal[k] for k in ('appointments', 'cancel_appointment_ids', 'cancel_item_ids')),
-                'chat reply review only permits personal itinerary changes')
+    # Delivered replies inform personal choices; user appointments still need
+    # the original user's authorization, judged by the agent in context.
     rules = deepcopy(body.get("user_constraints", {"cancelled": [], "appointments": []}))
     if changes:
         from .itinerary_updates import validate
@@ -319,7 +318,7 @@ def process_pending(agenda, *, proposal=None, message_id=None, expected_revision
     """One durable bounded review per pump, outside the chat response path."""
     now = agenda.p.clock.now()
     with agenda.store.connect() as db:
-        row = db.execute("SELECT message_id,status,attempts,retry_at FROM life_agenda_messages WHERE status IN ('pending','running') ORDER BY rowid LIMIT 1").fetchone()
+        row = db.execute("SELECT message_id,status,attempts,retry_at FROM life_agenda_messages WHERE status IN ('pending','running') AND (retry_at IS NULL OR retry_at<=?) ORDER BY rowid LIMIT 1", (now.isoformat(),)).fetchone()
         if not row or (proposal is None and row[3] and utc(row[3]) > now): return False
         if message_id is not None:
             require(row[0] == message_id, 'another message precedes this request')

@@ -92,6 +92,8 @@ def init_database():
         cursor.execute("ALTER TABLE messages ADD COLUMN media_url TEXT")
     if "duration_seconds" not in message_columns:
         cursor.execute("ALTER TABLE messages ADD COLUMN duration_seconds INTEGER")
+    if "quoted_message" not in message_columns:
+        cursor.execute("ALTER TABLE messages ADD COLUMN quoted_message TEXT")
 
     # Request identity is also initialized by TurnPipeline, but message-history
     # reads can happen independently (including during startup and tests).

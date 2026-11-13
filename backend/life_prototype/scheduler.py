@@ -679,9 +679,11 @@ class Scheduler:
                         # A delivered reply can reopen a completed user-message
                         # review. Give each reply revision its own durable job.
                         with self.store.connect() as db:
-                            request_row = db.execute('SELECT request FROM life_received_messages WHERE id=?', (message_id,)).fetchone()
+                            request_row = db.execute('SELECT m.request,a.attempts FROM life_received_messages m JOIN life_agenda_messages a ON a.message_id=m.id WHERE m.id=?', (message_id,)).fetchone()
                         reply_evidence = json.loads(request_row[0]).get('assistant_replies', []) if request_row else []
                         review_key = message_id + (':reply:' + str(reply_evidence[-1]['id']) if reply_evidence else '')
+                        if request_row and request_row[1]:
+                            review_key += ':retry:' + str(request_row[1])
                         job_id = self._job('agent_message', review_key, {'message_id': message_id})
                         with self.store.connect() as db:
                             job = db.execute('SELECT * FROM life_scheduler_jobs WHERE id=?', (job_id,)).fetchone()

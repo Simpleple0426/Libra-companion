@@ -5,6 +5,13 @@ from datetime import datetime, timedelta
 from .database import get_connection
 
 
+def _message_dict(row):
+    value = dict(row)
+    if value.get("quoted_message"):
+        value["quoted_message"] = json.loads(value["quoted_message"])
+    return value
+
+
 def get_context_message_counts(now):
     """Count all messages up to now, with calendar days in Shanghai time."""
     from zoneinfo import ZoneInfo
@@ -96,7 +103,7 @@ def save_message(
     message_type: str = "text",
     media_url: str | None = None,
     duration_seconds: int | None = None,
-    *, connection=None, voice_emotion=None,
+    *, connection=None, voice_emotion=None, quoted_message=None,
 ):
     owns_connection = connection is None
     connection = connection if connection is not None else get_connection()
@@ -126,6 +133,9 @@ def save_message(
     )
 
     message_id = cursor.lastrowid
+    if quoted_message is not None:
+        connection.execute('UPDATE messages SET quoted_message=? WHERE id=?',
+                           (json.dumps(quoted_message, ensure_ascii=False), message_id))
     # Capture raw evidence atomically with the chat message once V2 is initialized.
     # A failed insert rolls back both records; it cannot silently lose evidence.
     from domains.memory.store import capture_message
@@ -180,7 +190,7 @@ def get_messages(limit: int = 100):
     cursor.execute(
         """
         SELECT m.id, m.role, m.content, m.created_at, m.source, m.message_type,
-               m.media_url, m.duration_seconds,
+               m.media_url, m.duration_seconds, m.quoted_message,
                (SELECT substr(ci.request_key, 6)
                   FROM cognition_inputs ci
                  WHERE ci.message_id = m.id AND ci.request_key LIKE 'chat:%'
@@ -211,6 +221,7 @@ def get_messages(limit: int = 100):
             "media_url": row["media_url"],
             "duration_seconds": row["duration_seconds"],
             "request_id": row["request_id"],
+            "quoted_message": json.loads(row['quoted_message']) if row['quoted_message'] else None,
         }
         for row in rows
     ]
@@ -222,7 +233,7 @@ def get_messages_after(after_id: int, source: str | None = None, limit: int = 50
         rows = connection.execute(
             """
             SELECT m.id, m.role, m.content, m.created_at, m.source, m.message_type,
-                   m.media_url, m.duration_seconds,
+                   m.media_url, m.duration_seconds, m.quoted_message,
                    (SELECT substr(ci.request_key, 6) FROM cognition_inputs ci
                      WHERE ci.message_id=m.id AND ci.request_key LIKE 'chat:%' LIMIT 1) AS request_id
             FROM messages m
@@ -235,7 +246,7 @@ def get_messages_after(after_id: int, source: str | None = None, limit: int = 50
         rows = connection.execute(
             """
             SELECT m.id, m.role, m.content, m.created_at, m.source, m.message_type,
-                   m.media_url, m.duration_seconds,
+                   m.media_url, m.duration_seconds, m.quoted_message,
                    (SELECT substr(ci.request_key, 6) FROM cognition_inputs ci
                      WHERE ci.message_id=m.id AND ci.request_key LIKE 'chat:%' LIMIT 1) AS request_id
             FROM messages m
@@ -244,7 +255,7 @@ def get_messages_after(after_id: int, source: str | None = None, limit: int = 50
             (after_id, limit),
         ).fetchall()
     connection.close()
-    return [dict(row) for row in rows]
+    return [_message_dict(row) for row in rows]
 
 
 def get_message_updates_after(
@@ -256,7 +267,7 @@ def get_message_updates_after(
     rows = connection.execute(
         """
         SELECT id, role, content, created_at, source, message_type, media_url,
-               duration_seconds
+               duration_seconds, quoted_message
         FROM messages
         WHERE id > ? AND source NOT IN ('movie_watch','movie_chat','music_room')
         ORDER BY id ASC LIMIT ?
@@ -264,7 +275,7 @@ def get_message_updates_after(
         (after_id, max(1, min(limit, 200))),
     ).fetchall()
     connection.close()
-    return [dict(row) for row in rows]
+    return [_message_dict(row) for row in rows]
 
 
 def create_shared_memory(
@@ -422,7 +433,7 @@ def get_messages_for_date(
 ) -> list[dict]:
     connection = get_connection()
     sql = """SELECT m.id, m.role, m.content, m.created_at, m.source,
-                    m.message_type, m.media_url, m.duration_seconds,
+                    m.message_type, m.media_url, m.duration_seconds, m.quoted_message,
                     (SELECT substr(ci.request_key, 6) FROM cognition_inputs ci
                       WHERE ci.message_id=m.id AND ci.request_key LIKE 'chat:%' LIMIT 1) AS request_id,
                     CASE WHEN f.message_id IS NULL THEN 0 ELSE 1 END AS favorite
@@ -436,7 +447,7 @@ def get_messages_for_date(
         params = (date_text, max(1, limit))
     rows = connection.execute(sql, params).fetchall()
     connection.close()
-    return [dict(row) for row in rows]
+    return [_message_dict(row) for row in rows]
 
 
 def get_messages_for_source_date(source: str, date_text: str) -> list[dict]:
@@ -444,21 +455,21 @@ def get_messages_for_source_date(source: str, date_text: str) -> list[dict]:
     connection = get_connection()
     rows = connection.execute(
         """SELECT id, role, content, created_at, source, message_type,
-                  media_url, duration_seconds
+                  media_url, duration_seconds, quoted_message
              FROM messages
             WHERE source = ? AND substr(created_at, 1, 10) = ?
             ORDER BY id ASC""",
         (source, date_text),
     ).fetchall()
     connection.close()
-    return [dict(row) for row in rows]
+    return [_message_dict(row) for row in rows]
 
 
 def get_messages_between(start_at: datetime, end_at: datetime, *, include_rooms: bool = False) -> list[dict]:
     connection = get_connection()
     rows = connection.execute(
         """SELECT m.id, m.role, m.content, m.created_at, m.source,
-                  m.message_type, m.media_url, m.duration_seconds,
+                  m.message_type, m.media_url, m.duration_seconds, m.quoted_message,
                   (SELECT substr(ci.request_key, 6) FROM cognition_inputs ci
                     WHERE ci.message_id=m.id AND ci.request_key LIKE 'chat:%' LIMIT 1) AS request_id,
                   CASE WHEN f.message_id IS NULL THEN 0 ELSE 1 END AS favorite
@@ -475,7 +486,7 @@ def get_messages_between(start_at: datetime, end_at: datetime, *, include_rooms:
         (int(include_rooms), start_at.isoformat(), end_at.isoformat()),
     ).fetchall()
     connection.close()
-    return [dict(row) for row in rows]
+    return [_message_dict(row) for row in rows]
 
 
 def search_messages(query: str, limit: int = 200) -> list[dict]:
@@ -490,7 +501,7 @@ def search_messages(query: str, limit: int = 200) -> list[dict]:
     rows = connection.execute(
         """
         SELECT m.id, m.role, m.content, m.created_at, m.source, m.message_type, m.media_url,
-               m.duration_seconds,
+               m.duration_seconds, m.quoted_message,
                CASE WHEN f.message_id IS NULL THEN 0 ELSE 1 END AS favorite
         FROM messages m
         LEFT JOIN favorite_messages f ON f.message_id = m.id
@@ -501,7 +512,7 @@ def search_messages(query: str, limit: int = 200) -> list[dict]:
         (f"%{escaped}%", max(1, min(int(limit), 500))),
     ).fetchall()
     connection.close()
-    return [dict(row) for row in reversed(rows)]
+    return [_message_dict(row) for row in reversed(rows)]
 
 
 def set_message_favorite(message_id: int, favorite: bool) -> dict | None:
@@ -532,14 +543,14 @@ def get_favorite_messages() -> list[dict]:
     connection = get_connection()
     rows = connection.execute(
         """SELECT m.id, m.role, m.content, m.created_at, m.source,
-                  m.message_type, m.media_url, m.duration_seconds, 1 AS favorite
+                  m.message_type, m.media_url, m.duration_seconds, m.quoted_message, 1 AS favorite
            FROM favorite_messages f
            JOIN messages m ON m.id = f.message_id
            WHERE m.source NOT IN ('movie_watch','movie_chat','music_room')
            ORDER BY datetime(f.created_at) DESC, m.id DESC"""
     ).fetchall()
     connection.close()
-    return [dict(row) for row in rows]
+    return [_message_dict(row) for row in rows]
 
 
 def create_letter(

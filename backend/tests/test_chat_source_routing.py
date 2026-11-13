@@ -24,7 +24,7 @@ class ChatSourceRoutingTests(unittest.TestCase):
             'turn_pipeline': Mock(), 'pending_chat_image': None}
         exec(compile(ast.Module(body=functions, type_ignores=[]), 'chat-routing', 'exec'), self.scope)
         self.request = SimpleNamespace(request_id=None, message='hello', xhs_attachment=None,
-            reply_mode='text', music_context=None, device_context_enabled=False)
+            reply_mode='text', music_context=None, device_context_enabled=False, reply_to_message_id=None)
         import uuid
         self.scope['uuid'] = uuid
 

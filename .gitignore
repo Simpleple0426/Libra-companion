@@ -86,3 +86,9 @@ third_party/**/*.db-*
 /tools/watch_together/connection.json
 /.test-local/
 /.private-persona-backup/
+
+backend/.venv/
+backend/persona/private_life_sharing_rules.md
+backend/persona/private_older_partner_style_rules.md
+backend/persona/private_domestic_life_rules.md
+backend/persona/private_emotional_support_rules.md

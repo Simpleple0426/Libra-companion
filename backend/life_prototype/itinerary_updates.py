@@ -1,7 +1,6 @@
 """User-requested changes to the actor's own itinerary, never companionship."""
 from copy import deepcopy
 from datetime import timedelta
-import re
 
 from .activity_engine import require
 from .clock import utc
@@ -36,18 +35,9 @@ def _item(config, activity, place):
             'place': place, 'place_name': config['places'][place]['name'], 'semantics': 'planned_not_observed'}
 
 
-def immediate_itinerary(content):
-    """Timing evidence for personal itinerary only; companionship is separate."""
-    if re.search(r'明天|后天|下周|如果|假如|要是|不要|别|不用|不必|了吗|了么|几点|什么时候|[？?]|说过|他说|她说|[“”「」]', content):
-        return False
-    return bool(re.search(r'(?:现在|马上|立即|这就|赶紧|快点)(?:就)?(?:回家|出发|下班|开始|去|在|看|休息|把)', content)
-                or re.fullmatch(r'[\s，,！!。]*(?:急[\s，,！!。]*)*(?:你)?(?:快|赶紧|快点)?回家(?:吧|呀|啊|啦)?[\s，,！!。]*', content))
-
-
 def validate(changes, body, state, config, now, message):
     from .coarse_plan import _at, schedule_day
     from .coarse_plan_updates import protected
-    from .companionship import _start_time_evidence
     end_day = _at(schedule_day(now) + timedelta(days=1), '04:00')
     items = {i['id']: i for i in body['items']}
     result = []
@@ -69,19 +59,8 @@ def validate(changes, body, state, config, now, message):
             require(all(change[k] is None for k in ('start_at', 'end_at', 'activity', 'place_id')),
                     'cancel must not contain replacement fields')
             continue
-        # The semantic interpreter must ask for a concrete time instead of
-        # silently assigning one to "早点". Current-message evidence also
-        # supports the user's follow-up answer after that clarification.
-        immediate = immediate_itinerary(message['content'])
-        timing_text = re.sub(r'(改|调整|推迟|提前|挪|换)到', r'\1为', message['content'])
-        # A delivered actor commitment may select its own feasible time. It is
-        # never evidence of user consent to companionship or an appointment.
-        actor_choice = bool(message.get('assistant_replies'))
-        require(immediate or actor_choice or (change['start_at'] is not None and
-                _start_time_evidence(timing_text, immediate=False)),
-                '请先确认具体调整时间；不能把“早点”自行解释成某个时间')
-        if immediate:
-            change = {**change, 'start_at': None}  # resolve at commit, not model-call start
+        # The agent interprets timing in context, including its own feasible
+        # departure choice. Host checks constrain effects, never vocabulary.
         if change['start_at'] is None:
             require(schedule_day(utc(message['received_at'])) == schedule_day(now), 'stale immediate itinerary request')
         start = utc(change['start_at']) if change['start_at'] else now
