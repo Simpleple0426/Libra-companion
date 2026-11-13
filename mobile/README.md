@@ -6,7 +6,7 @@ Flutter chat client for the Libra FastAPI backend. For the beginner-friendly dep
 
 同一套源码提供两个 Android flavor：`prod` 保留现有包名
 `com.libra.companion.libra_app`，名称为“归然”；`dev` 包名为
-`com.libra.companion.libra_app.dev`，名称为“归然·测试”。两个 App 的地址、缓存和权限分别保存。
+`com.libra.companion.libra_app.dev`，名称也为“归然”。两个 App 的地址、缓存和权限分别保存。
 正式版覆盖更新需要沿用原签名，版本号不得降低；不要卸载正式版来安装测试版。
 当前 `app-phone-update.apk` 使用本机 Android debug 签名，而 Gradle release
 使用发布签名。此次额外生成的 `app-prod-phone.apk` 使用与该手机更新包一致的
