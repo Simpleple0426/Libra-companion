@@ -49,7 +49,6 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onDestroy() {
-        stopService(Intent(this, FocusPlaybackService::class.java))
         setFocusScreenAwake(false)
         super.onDestroy()
     }
@@ -65,19 +64,6 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "setFocusBackgroundPlayback" -> {
-                        try {
-                            val intent = Intent(this, FocusPlaybackService::class.java)
-                            if (call.argument<Boolean>("enabled") == true) {
-                                ContextCompat.startForegroundService(this, intent)
-                            } else {
-                                stopService(intent)
-                            }
-                            result.success(null)
-                        } catch (error: Exception) {
-                            result.error("focus_playback_service", error.message, null)
-                        }
-                    }
                     "getTodayEvents" -> result.success(getTodayEvents())
                     "getCalendarEvents" -> {
                         val startMillis = call.argument<Number>("startMillis")?.toLong() ?: 0L

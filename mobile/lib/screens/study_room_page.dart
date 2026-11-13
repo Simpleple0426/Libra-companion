@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 import '../controllers/study_room_controller.dart';
-import '../services/app_usage_service.dart';
 import '../services/focus_stats_store.dart';
 
 const _accent = Color(0xFFE27676);
@@ -30,71 +27,22 @@ class StudyRoomPage extends StatefulWidget {
 
 class _StudyRoomPageState extends State<StudyRoomPage>
     with WidgetsBindingObserver {
-  static const _focusVideoAsset = 'assets/study_room/focus_video.mp4';
-  static const _focusAudioAssets = [
-    'study_room/focus_audio_01.mp3',
-    'study_room/focus_audio_02.mp3',
-    'study_room/focus_audio_03.mp3',
-  ];
-
   final _contentController = TextEditingController();
   late final StudyRoomController _studyController;
-  final _focusAudio = AudioPlayer();
-  late final VideoPlayerController _focusVideo;
-  StreamSubscription<void>? _audioCompleteSubscription;
-  bool _videoReady = false;
-  bool _appIsActive = true;
-  bool _muted = false;
-  int _audioIndex = 0;
-  Duration _lastVideoPosition = Duration.zero;
-  int _stalledVideoTicks = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // A platform view is used deliberately here. Some Android devices keep a
-    // Flutter texture on the first decoded frame even though ExoPlayer is
-    // advancing normally, which makes the focus video look like a still image.
-    _focusVideo = VideoPlayerController.asset(
-      _focusVideoAsset,
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-      viewType: VideoViewType.platformView,
-    );
     _studyController = StudyRoomController(
       focusEventSink: widget.onFocusEvent,
-      onSessionStarted: () async {
-        final status = widget.onFocusStarted?.call();
-        await _startFocusMedia();
-        await status;
-      },
-      onSessionTick: _ensureFocusVideoIsAdvancing,
+      onSessionStarted: widget.onFocusStarted,
       onSessionEnded: () async {
         // Start the next session with the default prompt, not the previous topic.
         _contentController.clear();
-        final status = widget.onFocusEnded?.call();
-        await _stopFocusMedia();
-        await status;
+        await widget.onFocusEnded?.call();
       },
     )..addListener(_onStudyStateChanged);
-    unawaited(
-      _focusAudio.setAudioContext(
-        AudioContext(
-          android: const AudioContextAndroid(
-            stayAwake: true,
-            contentType: AndroidContentType.music,
-            usageType: AndroidUsageType.media,
-            audioFocus: AndroidAudioFocus.gain,
-          ),
-        ),
-      ),
-    );
-    _audioCompleteSubscription = _focusAudio.onPlayerComplete.listen((_) {
-      if (!_studyController.isFocusing) return;
-      _audioIndex = (_audioIndex + 1) % _focusAudioAssets.length;
-      unawaited(_playCurrentFocusAudio());
-    });
-    unawaited(_initializeFocusVideo());
     unawaited(_studyController.refreshStats());
     unawaited(_studyController.restore());
   }
@@ -110,151 +58,16 @@ class _StudyRoomPageState extends State<StudyRoomPage>
       ..removeListener(_onStudyStateChanged)
       ..dispose();
     _contentController.dispose();
-    _audioCompleteSubscription?.cancel();
-    _focusAudio.dispose();
-    unawaited(_setBackgroundPlayback(false));
-    _focusVideo.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    _appIsActive = state == AppLifecycleState.resumed;
     if (!_studyController.isFocusing) return;
     if (state == AppLifecycleState.resumed) {
       _studyController.onAppResumed();
-      if (_videoReady) _playFocusVideoAfterLayout();
     } else {
-      if (_videoReady) unawaited(_focusVideo.pause());
       unawaited(_studyController.checkpoint());
-    }
-  }
-
-  Future<void> _initializeFocusVideo() async {
-    try {
-      await _focusVideo.initialize();
-      await _focusVideo.setLooping(true);
-      await _focusVideo.setVolume(0);
-      if (!mounted) return;
-      setState(() => _videoReady = true);
-      if (_studyController.isFocusing) _playFocusVideoAfterLayout();
-    } catch (error, stackTrace) {
-      debugPrint('Study room video initialization failed: $error');
-      debugPrintStack(stackTrace: stackTrace);
-      // Keep the static study-room artwork if the video cannot be decoded.
-    }
-  }
-
-  Future<void> _startFocusMedia() async {
-    await _setBackgroundPlayback(true);
-    if (!mounted || !_studyController.isFocusing) {
-      await _setBackgroundPlayback(false);
-      return;
-    }
-    _audioIndex = 0;
-    if (_videoReady) {
-      await _focusVideo.seekTo(Duration.zero);
-      _playFocusVideoAfterLayout();
-    }
-    await _playCurrentFocusAudio();
-  }
-
-  void _playFocusVideoAfterLayout() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted ||
-          !_appIsActive ||
-          !_videoReady ||
-          !_studyController.isFocusing) {
-        return;
-      }
-      // Platform views are attached asynchronously on Android. Give the native
-      // SurfaceView time to exist before starting playback, then verify it.
-      Future<void>.delayed(const Duration(milliseconds: 600), () async {
-        if (!mounted ||
-            !_appIsActive ||
-            !_videoReady ||
-            !_studyController.isFocusing) {
-          return;
-        }
-        await _focusVideo.play();
-        await Future<void>.delayed(const Duration(milliseconds: 500));
-        if (mounted &&
-            _appIsActive &&
-            _studyController.isFocusing &&
-            !_focusVideo.value.isPlaying) {
-          await _focusVideo.play();
-        }
-      });
-    });
-  }
-
-  void _ensureFocusVideoIsAdvancing() {
-    if (!_appIsActive || !_videoReady || !_studyController.isFocusing) return;
-    final value = _focusVideo.value;
-    final position = value.position;
-    if (!value.isPlaying) {
-      unawaited(_focusVideo.play());
-    }
-    if (position <= _lastVideoPosition + const Duration(milliseconds: 80)) {
-      _stalledVideoTicks++;
-    } else {
-      _stalledVideoTicks = 0;
-    }
-    if (_stalledVideoTicks >= 2) {
-      _stalledVideoTicks = 0;
-      unawaited(
-        _focusVideo.pause().then((_) {
-          if (mounted && _appIsActive && _studyController.isFocusing) {
-            return _focusVideo.play();
-          }
-        }),
-      );
-    }
-    _lastVideoPosition = position;
-    debugPrint(
-      'Study room video: ready=$_videoReady playing=${value.isPlaying} '
-      'position=${position.inMilliseconds} error=${value.errorDescription}',
-    );
-  }
-
-  Future<void> _playCurrentFocusAudio() async {
-    if (!_studyController.isFocusing || _focusAudioAssets.isEmpty) return;
-    try {
-      await _focusAudio.setVolume(_muted ? 0 : 1);
-      await _focusAudio.play(AssetSource(_focusAudioAssets[_audioIndex]));
-      debugPrint(
-        'Study room audio started: ${_focusAudioAssets[_audioIndex]} '
-        'muted=$_muted',
-      );
-    } catch (error, stackTrace) {
-      debugPrint('Study room audio failed: $error');
-      debugPrintStack(stackTrace: stackTrace);
-      await _setBackgroundPlayback(false);
-    }
-  }
-
-  Future<void> _stopFocusMedia() async {
-    try {
-      await _focusAudio.stop();
-    } finally {
-      await _setBackgroundPlayback(false);
-    }
-    if (_videoReady) {
-      await _focusVideo.pause();
-      await _focusVideo.seekTo(Duration.zero);
-    }
-  }
-
-  Future<void> _toggleMuted() async {
-    setState(() => _muted = !_muted);
-    await _focusAudio.setVolume(_muted ? 0 : 1);
-  }
-
-  Future<void> _setBackgroundPlayback(bool enabled) async {
-    try {
-      await AppUsageService().setFocusBackgroundPlayback(enabled);
-    } catch (error) {
-      debugPrint('Study room background playback service failed: $error');
     }
   }
 
@@ -355,15 +168,11 @@ class _StudyRoomPageState extends State<StudyRoomPage>
 
   void _startFocus(int minutes) {
     FocusManager.instance.primaryFocus?.unfocus();
-    _lastVideoPosition = Duration.zero;
-    _stalledVideoTicks = 0;
     _studyController.startCountdown(minutes, _contentController.text);
   }
 
   void _startCountUp() {
     FocusManager.instance.primaryFocus?.unfocus();
-    _lastVideoPosition = Duration.zero;
-    _stalledVideoTicks = 0;
     _studyController.startCountUp(_contentController.text);
   }
 
@@ -440,30 +249,21 @@ class _StudyRoomPageState extends State<StudyRoomPage>
         body: Stack(
           fit: StackFit.expand,
           children: [
-            if (focusing && _videoReady)
-              _FocusVideoBackground(controller: _focusVideo)
-            else
-              const DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFFFF9F7),
-                      Color(0xFFFFECEA),
-                      Color(0xFFF8E3E1),
-                    ],
-                    stops: [0, .55, 1],
-                  ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFFFF9F7),
+                    Color(0xFFFFECEA),
+                    Color(0xFFF8E3E1),
+                  ],
+                  stops: [0, .55, 1],
                 ),
               ),
+            ),
             if (!focusing) const _StudyRoomBackdrop(),
-            if (focusing)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: _videoReady ? .12 : 0),
-                ),
-              ),
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(18, 10, 18, 20),
@@ -525,9 +325,7 @@ class _StudyRoomPageState extends State<StudyRoomPage>
                       ),
                       const SizedBox(height: 10),
                       _ActiveFocusControls(
-                        muted: _muted,
                         paused: _studyController.paused,
-                        onToggleMuted: _toggleMuted,
                         onTogglePaused: _togglePaused,
                         onStop: _stopFocus,
                       ),
@@ -984,15 +782,11 @@ class _DashboardStat extends StatelessWidget {
 
 class _ActiveFocusControls extends StatelessWidget {
   const _ActiveFocusControls({
-    required this.muted,
     required this.paused,
-    required this.onToggleMuted,
     required this.onTogglePaused,
     required this.onStop,
   });
-  final bool muted;
   final bool paused;
-  final VoidCallback onToggleMuted;
   final VoidCallback onTogglePaused;
   final VoidCallback onStop;
 
@@ -1006,14 +800,6 @@ class _ActiveFocusControls extends StatelessWidget {
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(
-          onPressed: onToggleMuted,
-          tooltip: muted ? '打开声音' : '静音',
-          icon: Icon(
-            muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-            color: _ink,
-          ),
-        ),
         IconButton(
           onPressed: onTogglePaused,
           tooltip: paused ? '继续' : '暂停',
@@ -1740,17 +1526,6 @@ class _SevenDayChart extends StatelessWidget {
         );
       },
     );
-  }
-}
-
-class _FocusVideoBackground extends StatelessWidget {
-  const _FocusVideoBackground({required this.controller});
-
-  final VideoPlayerController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.expand(child: VideoPlayer(controller));
   }
 }
 

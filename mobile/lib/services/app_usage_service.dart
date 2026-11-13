@@ -29,7 +29,4 @@ class AppUsageService {
 
   Future<void> setKeepScreenOn(bool enabled) =>
       _channel.invokeMethod<void>('setKeepScreenOn', {'enabled': enabled});
-
-  Future<void> setFocusBackgroundPlayback(bool enabled) => _channel
-      .invokeMethod<void>('setFocusBackgroundPlayback', {'enabled': enabled});
 }

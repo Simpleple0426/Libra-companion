@@ -7,8 +7,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:label="@string/app_name"
@@ -36,11 +34,6 @@
             android:name=".ProactivePollReceiver"
             android:enabled="false"
             android:exported="false" />
-        <service
-            android:name=".FocusPlaybackService"
-            android:exported="false"
-            android:stopWithTask="true"
-            android:foregroundServiceType="mediaPlayback" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
