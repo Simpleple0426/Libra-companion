@@ -1184,24 +1184,6 @@ class _WeatherCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    size: 24 * scale,
-                    color: homeInactive,
-                  ),
-                  SizedBox(width: 5 * scale),
-                  Text(
-                    '西安市 · 长安区',
-                    style: TextStyle(
-                      fontSize: 17 * scale,
-                      fontFamily: 'serif',
-                      color: const Color(0xFF4D4745),
-                    ),
-                  ),
-                ],
-              ),
               Expanded(
                 child: Center(
                   child: Column(
