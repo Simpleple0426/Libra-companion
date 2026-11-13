@@ -59,7 +59,7 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            resValue("string", "app_name", "归然·测试")
+            resValue("string", "app_name", "归然")
         }
     }
 }
