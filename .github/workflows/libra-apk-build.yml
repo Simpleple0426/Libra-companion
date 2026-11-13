@@ -16,8 +16,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json -o /tmp/flutter-releases.json
-          archive=$(jq -r '.current_release.stable as $sha | .releases[] | select(.hash == $sha and .channel == "stable") | .archive' /tmp/flutter-releases.json | head -1)
+          archive=stable/linux/flutter_linux_3.44.2-stable.tar.xz
           test -n "$archive"
           curl -fsSL "https://storage.googleapis.com/flutter_infra_release/releases/$archive" | tar -xJ -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
