@@ -4,6 +4,26 @@
 
 [功能说明](docs/guides/FEATURES.md) · [架构说明](docs/architecture/AGENTIC_CHAT.md) · [部署指南](docs/guides/DEPLOYMENT.md) · [项目文档](docs/guides/PROJECT_GUIDE.md)
 
+## 快速试用（Windows + Android）
+
+[下载 Android 试用 APK](https://github.com/Simpleple0426/Libra-companion/releases/download/v1.0.0-preview.1/Libra-media-free-dev-android-arm64.apk) · [版本说明](https://github.com/Simpleple0426/Libra-companion/releases/tag/v1.0.0-preview.1)
+
+1. **安装手机端**：在 ARM64 Android 手机上安装 APK。应用名称为「归然·测试」。
+2. **准备 Windows 后端**：下载或克隆本仓库，安装 Python 3.11 或 3.12，并用自己的账号登录 Codex CLI。在项目根目录打开 PowerShell，执行以下命令。
+
+~~~powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+New-Item -ItemType Directory -Force ..\config | Out-Null
+if (!(Test-Path ..\config\.env)) { Copy-Item .env.example ..\config\.env }
+.\.venv\Scripts\python.exe -m uvicorn main:app --host 0.0.0.0 --port 8000
+~~~
+
+3. **连接手机**：在电脑上打开 [后端健康检查](http://127.0.0.1:8000/health)，确认服务已启动。让 Windows 电脑和手机加入同一个 Tailscale 网络。在 App 首次启动时填入电脑的 Tailscale 地址，例如 http://100.x.x.x:8000，然后发送一条消息试试。
+
+基础文字聊天可使用模板的默认 Codex 配置，语音服务按需设置。安装 Codex CLI、连接 Tailscale 和排查问题的步骤见[部署指南](docs/guides/DEPLOYMENT.md)。
+
 ## 项目概述
 
 Libra Companion 不是单轮聊天界面，而是一套可持续运行的角色 Agent 系统。Flutter 客户端负责聊天、日程与共同生活交互；FastAPI 后端统一编排模型会话、记忆检索、工具执行、情绪状态和生活事件。
