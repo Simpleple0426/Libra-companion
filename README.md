@@ -6,9 +6,9 @@
 
 ## 快速试用（Windows + Android）
 
-[下载 Android 试用 APK](https://github.com/Simpleple0426/Libra-companion/releases/download/v1.0.0-preview.1/Libra-media-free-dev-android-arm64.apk) · [版本说明](https://github.com/Simpleple0426/Libra-companion/releases/tag/v1.0.0-preview.1)
+[下载 Android 试用 APK](https://github.com/Simpleple0426/Libra-companion/releases/download/v1.0.0-preview.2/Libra-android-arm64.apk) · [版本说明](https://github.com/Simpleple0426/Libra-companion/releases/tag/v1.0.0-preview.2)
 
-1. **安装手机端**：在 ARM64 Android 手机上安装 APK。应用名称为「归然·测试」。
+1. **安装手机端**：在 ARM64 Android 手机上安装 APK。应用名称为「归然」。
 2. **准备 Windows 后端**：下载或克隆本仓库，安装 Python 3.11 或 3.12，并用自己的账号登录 Codex CLI。在项目根目录打开 PowerShell，执行以下命令。
 
 ~~~powershell
