@@ -1,0 +1,46 @@
+name: Build media-free Libra test APK
+on:
+  push:
+    branches: [libra-apk-build]
+permissions:
+  contents: read
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Flutter and restore Gradle wrapper
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json -o /tmp/flutter-releases.json
+          archive=$(jq -r '.current_release.stable as $sha | .releases[] | select(.hash == $sha and .channel == "stable") | .archive' /tmp/flutter-releases.json | head -1)
+          test -n "$archive"
+          curl -fsSL "https://storage.googleapis.com/flutter_infra_release/releases/$archive" | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+          curl -fsSL https://services.gradle.org/distributions/gradle-9.1.0-bin.zip -o "$RUNNER_TEMP/gradle.zip"
+          unzip -q "$RUNNER_TEMP/gradle.zip" -d "$RUNNER_TEMP"
+          mkdir -p "$RUNNER_TEMP/wrapper"
+          touch "$RUNNER_TEMP/wrapper/settings.gradle"
+          "$RUNNER_TEMP/gradle-9.1.0/bin/gradle" -p "$RUNNER_TEMP/wrapper" wrapper --gradle-version 9.1.0
+          cp "$RUNNER_TEMP/wrapper/gradlew" mobile/android/
+          cp "$RUNNER_TEMP/wrapper/gradle/wrapper/gradle-wrapper.jar" mobile/android/gradle/wrapper/
+          chmod +x mobile/android/gradlew
+      - name: Build dev debug APK
+        working-directory: mobile
+        run: |
+          flutter --version
+          flutter pub get
+          flutter build apk --debug --flavor dev --target-platform android-arm64
+          apk=build/app/outputs/flutter-apk/app-dev-debug.apk
+          test -s "$apk"
+          unzip -Z1 "$apk" > "$RUNNER_TEMP/apk-entries.txt"
+          ! grep -E 'open_video|focus_video|focus_audio_' "$RUNNER_TEMP/apk-entries.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Libra-media-free-dev-android-arm64
+          path: mobile/build/app/outputs/flutter-apk/app-dev-debug.apk
+          if-no-files-found: error
