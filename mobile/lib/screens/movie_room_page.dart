@@ -165,7 +165,7 @@ class _MovieRoomPageState extends State<MovieRoomPage> {
     final value = await showDatePicker(
       context: context,
       initialDate: _date ?? DateTime.now(),
-      firstDate: DateTime(2022, 8, 22),
+      firstDate: DateTime(1990),
       lastDate: DateTime.now(),
       helpText: '查找观影聊天',
       cancelText: '取消',

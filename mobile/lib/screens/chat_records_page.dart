@@ -30,7 +30,7 @@ class _ChatSearchPageState extends State<ChatSearchPage> {
     final selected = await showDatePicker(
       context: context,
       initialDate: _date,
-      firstDate: DateTime(2022, 8, 22),
+      firstDate: DateTime(1990),
       lastDate: DateUtils.dateOnly(DateTime.now()),
       helpText: '选择聊天日期',
       cancelText: '取消',

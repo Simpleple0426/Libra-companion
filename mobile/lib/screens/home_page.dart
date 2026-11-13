@@ -474,7 +474,7 @@ class _ActivityCard extends StatelessWidget {
                   onChanged: (value) => subject = value,
                   decoration: const InputDecoration(
                     labelText: '人称',
-                    hintText: '例如：我、Simple',
+                    hintText: '例如：我',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -602,12 +602,9 @@ class _ActivityCard extends StatelessWidget {
     var text = description.trim();
     if (userNickname.isNotEmpty && text.startsWith(userNickname)) return text;
     text = text.replaceFirst(
-      RegExp(r'^(?:用户|我|simple)', caseSensitive: false),
+      RegExp(r'^(?:用户|我)', caseSensitive: false),
       '',
     );
-    while (text.toLowerCase().startsWith('simple')) {
-      text = text.substring(6);
-    }
     return '$userNickname$text';
   }
 
@@ -975,7 +972,7 @@ class _ActivityCard extends StatelessWidget {
               ),
               SizedBox(width: 8 * scale),
               _AvatarWithStatus(
-                asset: 'assets/avatars/simple.png',
+                asset: 'assets/avatars/user.png',
                 filePath: userAvatarPath,
                 status: userStatus,
                 scale: scale,

@@ -316,7 +316,7 @@ class _PersonalizationSettingsPageState
               ),
               _avatarEditor(
                 '我的头像',
-                _avatar(_userAvatar, 'assets/avatars/simple.png'),
+                _avatar(_userAvatar, 'assets/avatars/user.png'),
                 () => _pickAvatar(false),
               ),
             ],

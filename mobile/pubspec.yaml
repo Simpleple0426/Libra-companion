@@ -80,7 +80,7 @@ flutter:
   assets:
     - assets/icons/libra_icon.png
     - assets/avatars/libra.png
-    - assets/avatars/simple.png
+    - assets/avatars/user.png
     - assets/text/libra_notes.md
     - assets/open_video.mp4
     - assets/study_room/focus_video.mp4

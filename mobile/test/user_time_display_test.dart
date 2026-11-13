@@ -8,7 +8,7 @@ import 'package:libra_app/services/libra_api.dart';
 import 'package:libra_app/services/life_status_display.dart';
 
 void main() {
-  setUp(() => DisplayNames.user = 'simple');
+  setUp(() => DisplayNames.user = 'Demo');
   tearDown(() => DisplayNames.user = '我');
   final start = DateTime(2026, 9, 29, 14);
   final end = start.add(const Duration(hours: 2));
@@ -42,7 +42,7 @@ void main() {
       expect(status.schedule.single.kind, 'user_time');
       expect(status.schedule.single.title, '陪用户逛漫展');
       expect(status.schedule.single.place, isEmpty);
-      expect(coarseLifeStatusLabel(status), '陪simple逛漫展');
+      expect(coarseLifeStatusLabel(status), '陪Demo逛漫展');
     },
   );
 
@@ -55,7 +55,7 @@ void main() {
           home: Scaffold(body: LifeScheduleSheet(entries: status.schedule)),
         ),
       );
-      expect(find.text('陪simple逛漫展'), findsOneWidget);
+      expect(find.text('陪Demo逛漫展'), findsOneWidget);
       expect(find.text('14:00—16:00'), findsOneWidget);
       expect(find.textContaining('地点未知'), findsNothing);
     },
@@ -84,7 +84,7 @@ void main() {
           ),
         ),
       );
-      expect(find.text('左然正在陪simple逛漫展'), findsOneWidget);
+      expect(find.text('左然正在陪Demo逛漫展'), findsOneWidget);
       expect(find.text('左然正在自由安排'), findsNothing);
       expect(find.byIcon(Icons.location_on_rounded), findsNothing);
     },
@@ -106,7 +106,7 @@ void main() {
         ),
       ),
     );
-    expect(find.text('左然正在陪simple逛漫展'), findsNothing);
+    expect(find.text('左然正在陪Demo逛漫展'), findsNothing);
   });
 
   test('active companionship has a shared status even across sleep', () {
