@@ -573,7 +573,7 @@ def _is_goodnight_message(message: str) -> bool:
         return False
     has_goodnight = "晚安" in text or "goodnight" in text or "good-night" in text
     if not has_goodnight:
-        return False
+        return bool(re.fullmatch(r"(?:那)?我(?:先|要|准备|该)?(?:去)?睡(?:觉)?了[哦啦啊哈~～。！!]*", text))
     # A mention of goodnight is not necessarily a present bedtime handshake.
     # Reject recollection, quotation, negation, questions and morning repair.
     non_bedtime_context = (

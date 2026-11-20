@@ -140,6 +140,8 @@ class Interaction:
 
     def _start_sleep(self, db, state, prefix, now, message_id, *, trigger="goodnight"):
         schedule = self._schedule(state, now)
+        if trigger == 'planned_bedtime':
+            schedule['reason'] = 'planned_bedtime_after_completed_routine'
         if trigger == 'quiet_night_fallback':
             schedule['reason'] = 'quiet_night_fallback_with_confirmed_natural_wake_reference'
         episode = {"id": prefix+":sleep", "started_at": now.isoformat(), "settled_until": now.isoformat(),
@@ -151,67 +153,54 @@ class Interaction:
         self._event(db, state, prefix+":sleep-start", "sleep_start", deepcopy(episode), now)
         return schedule["schedule_status"]
 
+    def _bedtime_slot(self, db, now):
+        from .coarse_plan import schedule_day
+        agenda = self.cog.agenda._read(db, schedule_day(now))
+        return next((item for item in (agenda or {}).get("items", ())
+                     if utc(item["start_at"]) <= now < utc(item["end_at"])), None)
+
     def start_pending_sleep_if_ready(self):
         """Start accepted sleep after the remaining bedtime routine completes."""
         with self.store.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             state = self.store.read(db)
             pending = state.get("sleep", {}).get("pending_goodnight")
-            if not pending or state["sleep"]["status"] != "awake" or state.get("active"):
+            if state["sleep"]["status"] != "awake" or state.get("active"):
                 return None
+            planned = self.p.config.get("mode") == "local_single_user"
+            if not pending:
+                return None
+            if planned:
+                from .coarse_plan import schedule_day
+                if schedule_day(pending["accepted_at"]) != schedule_day(self.clock.now()):
+                    return None
+                from .skill_personal_care import identity, routine
+                slot = self._bedtime_slot(db, self.clock.now())
+                if routine(slot) != "bedtime_preparation" or state["place"] != slot["place"]:
+                    return None
+                care = state.get("care_plans", {}).get(identity(slot), {})
+                if not care.get("completed_at"):
+                    return None
+                # A morning message can wake him while yesterday's bedtime slot is still open.
+                last_wake = state["sleep"].get("last_wake")
+                if last_wake and utc(last_wake["at"]) >= utc(care["completed_at"]):
+                    return None
             from .daily_obligations import unresolved_before_sleep
             if unresolved_before_sleep(
                     self.p.config, state, self.clock.now(),
                     getattr(self.cog, "calendar_provider", None)):
                 return None
-            prefix = "p3:deferred-goodnight:" + pending["message_id"]
-            status = self._start_sleep(db, state, prefix, self.clock.now(), pending["message_id"])
+            if planned:
+                status = self._start_sleep(db, state, "p3:planned-bedtime:" + slot["id"],
+                                           self.clock.now(), pending["message_id"], trigger="planned_bedtime")
+            else:
+                prefix = "p3:deferred-goodnight:" + pending["message_id"]
+                status = self._start_sleep(db, state, prefix, self.clock.now(), pending["message_id"])
             return {"sleep_request": status, "sleep": deepcopy(state["sleep"])}
 
     def start_fallback_sleep_if_ready(self):
-        """Host-owned quiet-night fallback; never infer that the user is asleep."""
-        if self.p.config.get("mode") != "local_single_user":
-            return None
-        now = self.clock.now()
-        local = utc(now).astimezone(LOCAL)
-        if not 2 <= local.hour < 4:
-            return None
-        with self.store.connect() as db:
-            db.execute("BEGIN IMMEDIATE")
-            state = self.store.read(db)
-            sleep = state.get("sleep", {})
-            if sleep.get("status") != "awake" or state.get("active") or sleep.get("pending_goodnight"):
-                return None
-            from .daily_obligations import descendant, unresolved_before_sleep
-            if not descendant(self.p.config, state["place"], "home"):
-                return None
-            if unresolved_before_sleep(self.p.config, state, now,
-                                       getattr(self.cog, "calendar_provider", None)):
-                return None
-            # Include queued deliveries, which have not reached receive() yet.
-            tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-            if 'life_agent_inbox' in tables and db.execute(
-                    "SELECT 1 FROM life_agent_inbox WHERE status='pending' LIMIT 1").fetchone():
-                return None
-            contacts = []
-            for request, receipt in db.execute("SELECT request,receipt FROM life_received_messages"):
-                request, receipt = json.loads(request), json.loads(receipt)
-                at = request.get('received_at') or receipt.get('occurred_at')
-                if at:
-                    contacts.append(utc(at))
-            if sleep.get('last_wake'):
-                contacts.append(utc(sleep['last_wake']['at']))
-            if contacts and now - max(contacts) < timedelta(minutes=30):
-                return None
-            schedule = self._schedule(state, now)
-            if not schedule.get('natural_wake_at'):
-                return None
-            notice = getattr(self, 'before_fallback_sleep', None)
-            if notice is not None:
-                notice(local.date().isoformat())
-            prefix = 'p3:quiet-night:' + now.isoformat()
-            self._start_sleep(db, state, prefix, now, None, trigger='quiet_night_fallback')
-            return {"sleep_request": "quiet_night_fallback", "sleep": deepcopy(state['sleep'])}
+        # Silence alone does not complete the bedtime handshake.
+        return None
 
     def _schedule(self, state, now):
         if self.config["source"] == "user_confirmed_local_single_user" and not self.config["normal_sleep_windows"]:
@@ -428,25 +417,31 @@ class Interaction:
                 state["sleep"].update(status="awake", current=None, awaiting_goodnight=True)
                 self._event(db, state, prefix+":recovery-contact", "recovery_contact", {
                     "message_id": message_id, "gap_sleep": "unknown", "invented_wake_reason": None}, now)
-            if state["sleep"]["status"] == "sleeping":
+            farewell = intent == "goodnight" and self.p.config.get("mode") == "local_single_user"
+            if state["sleep"]["status"] == "sleeping" and not farewell:
                 self._wake(db, state, prefix+":message-wake", now, "message", message_id)
                 wake = "message"
             saved_activity = state["active"]
             from .daily_obligations import unresolved_before_sleep
             pending_shower = unresolved_before_sleep(
                 self.p.config, state, now, getattr(self.cog, "calendar_provider", None)) \
-                if intent == "goodnight" else []
+                if intent == "goodnight" and not farewell else []
             active = state["activities"].get(saved_activity) if saved_activity else None
             keep_bedtime_routine = bool(intent == "goodnight" and pending_shower and active
                                         and active.get("kind") == "showering")
-            if saved_activity and (interrupt or intent == "goodnight") and not keep_bedtime_routine:
+            if saved_activity and not farewell and (interrupt or intent == "goodnight") and not keep_bedtime_routine:
                 self.p._commit_locked(db, prefix+":interrupt", {"operation": "interrupt", "payload": {
                     "activity_id": saved_activity, "reason": source + " " + message_id},
                     "expected_revision": state["revision"]}, None)
                 state = self.store.read(db)
             self._commitment(state, commitment, message_id, content)
             sleep_request = "not_requested"
-            if intent == "goodnight":
+            if farewell and state["sleep"]["status"] == "awake":
+                state["sleep"]["pending_goodnight"] = {
+                    "message_id": message_id, "accepted_at": utc(received_at or now).isoformat(),
+                }
+                sleep_request = "accepted_pending_bedtime_routine"
+            elif intent == "goodnight" and not farewell:
                 if pending_shower:
                     state["sleep"].update(awaiting_goodnight=False, pending_goodnight={
                         "message_id": message_id, "accepted_at": now.isoformat(),
@@ -458,7 +453,7 @@ class Interaction:
             fact = {"message_id": message_id, "content": content, "intent": intent,
                     "envelope_source": source, "wake_reason": wake,
                     "sleep_request": sleep_request, "sleep_total_seconds": state["sleep"]["total_seconds"],
-                    "interrupted_activity": saved_activity if (interrupt or intent == "goodnight") else None,
+                    "interrupted_activity": saved_activity if not farewell and (interrupt or intent == "goodnight") else None,
                     "commitment_change": commitment}
             event = self._event(db, state, prefix, "received_test_message", fact, now)
             receipt = {**event, **fact, "sleep": deepcopy(state["sleep"]), "active": state["active"]}
