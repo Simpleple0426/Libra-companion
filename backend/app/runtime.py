@@ -2284,7 +2284,14 @@ def _prepare_delivery_messages(messages: list[str], maximum: int) -> list[str]:
         if re.fullmatch(r"\s*\[\[(?:voice|sticker|pat):.*?\]\]\s*", sanitized, re.DOTALL):
             safe_messages.append(sanitized)
         else:
-            safe_messages.extend(_split_at_natural_boundaries(sanitized))
+            for part in _split_at_natural_boundaries(sanitized):
+                # Models may also return the closing quote in a separate messages item.
+                suffix = re.match(r"[”’」』）》】）]+", part)
+                if suffix and safe_messages and not safe_messages[-1].startswith("[["):
+                    safe_messages[-1] += suffix.group()
+                    part = part[suffix.end():].lstrip()
+                if part:
+                    safe_messages.append(part)
     return _fit_message_limit(_merge_short_messages(safe_messages), maximum)
 
 
@@ -2330,11 +2337,16 @@ def _sanitize_assistant_message(message: str) -> str:
 
 
 def _split_at_natural_boundaries(text: str, hard_limit: int = 180) -> list[str]:
-    units = [
-        unit.strip()
-        for unit in re.split(r"(?<=[。！？!?])\s*|\n+", text)
-        if unit.strip()
-    ]
+    # Consume closing punctuation before ending a bubble.
+    units = []
+    start = 0
+    for match in re.finditer(r"[。！？!?]+[”’」』）》】）]*|\n+", text):
+        unit = text[start:match.end()].strip()
+        if unit:
+            units.append(unit)
+        start = match.end()
+    if text[start:].strip():
+        units.append(text[start:].strip())
     if not units:
         return []
     result = []
@@ -2348,6 +2360,8 @@ def _split_at_natural_boundaries(text: str, hard_limit: int = 180) -> list[str]:
                 remaining.rfind(";", 0, hard_limit),
             )
             cut = boundary + 1 if boundary >= hard_limit // 2 else hard_limit
+            while cut < len(remaining) and remaining[cut] in "”’」』）》】）":
+                cut += 1
             result.append(remaining[:cut].strip())
             remaining = remaining[cut:].strip()
         if remaining:
